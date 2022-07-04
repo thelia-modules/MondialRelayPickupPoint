@@ -1,4 +1,4 @@
-# Mondial Relay Home Delivery
+# Mondial Relay Pickup Point Delivery
 
 Add a short description here. You can also add a screenshot if needed.
 
