@@ -1,0 +1,97 @@
+{
+    "shippingZones": [
+        {
+            "name": "Mondial Relay - Relay delivery Zone 1",
+            "delivery_time_in_days": 3,
+            "countries": [
+                "FRA",
+                "BEL",
+                "LUX",
+                "MCO"
+            ],
+            "prices": [
+                {
+                    "up_to": 0.5,
+                    "price_euro": 4.55
+                },
+                {
+                    "up_to": 1,
+                    "price_euro": 5.25
+                },
+                {
+                    "up_to": 2,
+                    "price_euro": 5.95
+                },
+                {
+                    "up_to": 3,
+                    "price_euro": 6.80
+                },
+                {
+                    "up_to": 5,
+                    "price_euro": 8
+                },
+                {
+                    "up_to": 7,
+                    "price_euro": 10.50
+                },
+                {
+                    "up_to": 10,
+                    "price_euro": 12.75
+                },
+                {
+                    "up_to": 15,
+                    "price_euro": 15.35
+                },
+                {
+                    "up_to": 30,
+                    "price_euro": 19.10
+                }
+            ]
+        },
+        {
+            "name": "Mondial Relay - Relay delivery Zone 2",
+            "delivery_time_in_days": 5,
+            "countries": [
+                "ESP"
+            ],
+            "prices": [
+                {
+                    "up_to": 0.5,
+                    "price_euro": 8.40
+                },
+                {
+                    "up_to": 1,
+                    "price_euro": 9
+                },
+                {
+                    "up_to": 2,
+                    "price_euro": 9.80
+                },
+                {
+                    "up_to": 3,
+                    "price_euro": 10.50
+                },
+                {
+                    "up_to": 5,
+                    "price_euro": 12.80
+                },
+                {
+                    "up_to": 7,
+                    "price_euro": 15.20
+                },
+                {
+                    "up_to": 10,
+                    "price_euro": 17.40
+                },
+                {
+                    "up_to": 15,
+                    "price_euro": 22.80
+                },
+                {
+                    "up_to": 30,
+                    "price_euro": 27.50
+                }
+            ]
+        }
+    ]
+}
