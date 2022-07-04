@@ -192,7 +192,7 @@ class APIListener implements EventSubscriberInterface
             ->setZipCode($point['zipcode'])
             ->setPhoneNumber('')
             ->setCellphoneNumber('')
-            ->setCompany('')
+            ->setCompany($point['name'])
             ->setCountryCode($point['country'])
             ->setFirstName('')
             ->setLastName('')

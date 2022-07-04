@@ -212,7 +212,7 @@ class MondialRelayPickupPoint extends AbstractDeliveryModule
      */
     public function isValidDelivery(Country $country)
     {
-        return null !== $this->getAreaForCountry($country);
+        return !empty($this->getAreaForCountry($country)->getData());
     }
 
     /**
