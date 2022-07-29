@@ -42,7 +42,7 @@ class AdminHookManager extends BaseHook
                 'id' => 'tools_mondial_relay',
                 'class' => '',
                 'url' => URL::getInstance()->absoluteUrl('/admin/module/MondialRelayPickupPoint'),
-                'title' => $this->trans('Mondial Relay home delivery', [], MondialRelayPickupPoint::DOMAIN_NAME)
+                'title' => $this->trans('Mondial Relay pickup point', [], MondialRelayPickupPoint::DOMAIN_NAME)
             ]
         );
     }
