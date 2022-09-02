@@ -83,7 +83,7 @@ class PriceController extends BaseAdminController
 
             $data = $viewForm->getData();
 
-            MondialRelayPickupPointPriceQuery::create()->filterByMaxWeight($data['max_weight'])->delete();
+            MondialRelayPickupPointPriceQuery::create()->filterByAreaId($areaId)->filterByMaxWeight($data['max_weight'])->delete();
 
             (new MondialRelayPickupPointPrice())
                 ->setAreaId($areaId)

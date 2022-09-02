@@ -263,6 +263,10 @@ class MondialRelayPickupPoint extends AbstractDeliveryModule
                 ->orderByPriceWithTax()
                 ->findOne();
 
+            if (!$mondialRelayDeliveryPrice){
+                continue;
+            }
+
             $postage = $mondialRelayDeliveryPrice->getPriceWithTax();
 
             if ($minPostage === null || $postage < $minPostage) {
@@ -273,7 +277,7 @@ class MondialRelayPickupPoint extends AbstractDeliveryModule
             }
         }
 
-        return $this->buildOrderPostage($minPostage, $country, $locale);
+        return $minPostage === null ? $minPostage : $this->buildOrderPostage($minPostage, $country, $locale);
     }
 
     public function buildOrderPostage($postage, $country, $locale, $taxRuleId = null)
