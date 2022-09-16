@@ -10,14 +10,15 @@
 
 namespace MondialRelayPickupPoint\EventListeners;
 
-use MondialRelay\ApiClient;
 use MondialRelay\BussinessHours\BussinessHours;
+use MondialRelay\Point\PointFactory;
 use MondialRelayPickupPoint\Event\FindRelayEvent;
 use MondialRelayPickupPoint\Event\MondialRelayEvents;
 use MondialRelayPickupPoint\Model\MondialRelayPickupPointAddress;
 use MondialRelayPickupPoint\Model\MondialRelayPickupPointAddressQuery;
 use MondialRelayPickupPoint\MondialRelayPickupPoint;
 use MondialRelay\Point\Point;
+use MondialRelayPickupPoint\WebApi\ApiHelper;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -27,161 +28,29 @@ use Thelia\Core\Event\TheliaEvents;
 use Thelia\Core\HttpFoundation\Request;
 use Thelia\Core\HttpFoundation\Session\Session;
 use Thelia\Core\Translation\Translator;
-use Thelia\Exception\TheliaProcessException;
 use Thelia\Model\CountryQuery;
 use Thelia\Model\OrderAddressQuery;
+use MondialRelayPickupPoint\WebApi\MondialRelayWebApi;
 
 class DeliveryListener extends BaseAction implements EventSubscriberInterface
 {
     /** @var RequestStack */
     protected $requestStack;
+    private MondialRelayWebAPI $mondialRelayWebApi;
 
     /**
      * DeliveryPostageListener constructor.
      * @param RequestStack $requestStack
      */
-    public function __construct(RequestStack $requestStack)
+    public function __construct(RequestStack $requestStack, MondialRelayWebApi $mondialRelayWebApi)
     {
         $this->requestStack = $requestStack;
+        $this->mondialRelayWebApi = $mondialRelayWebApi;
     }
-
-    /**
-     * @return ApiClient
-     * @throws \SoapFault
-     */
-    protected function getWebServiceClient()
-    {
-        return new ApiClient(
-            new \SoapClient(
-                MondialRelayPickupPoint::getConfigValue(MondialRelayPickupPoint::WEBSERVICE_URL)
-            ),
-            MondialRelayPickupPoint::getConfigValue(MondialRelayPickupPoint::CODE_ENSEIGNE),
-            MondialRelayPickupPoint::getConfigValue(MondialRelayPickupPoint::PRIVATE_KEY)
-        );
-    }
-
 
     protected function makeHoraire($str)
     {
         return substr($str, 0, 2) . ':' . substr($str, 2);
-    }
-
-    /**
-     * @param FindRelayEvent $event
-     * @param $eventName
-     * @param EventDispatcherInterface $dispatcher
-     * @throws \Exception
-     */
-    public function findRelays(FindRelayEvent $event, $eventName, EventDispatcherInterface $dispatcher)
-    {
-        $days = [
-            'monday' => Translator::getInstance()->trans("Monday"),
-            'tuesday' => Translator::getInstance()->trans("Tuesday"),
-            'wednesday' => Translator::getInstance()->trans("Wednesday"),
-            'thursday' => Translator::getInstance()->trans("Thursday"),
-            'friday' => Translator::getInstance()->trans("Friday"),
-            'saturday' => Translator::getInstance()->trans("Saturday"),
-            'sunday' => Translator::getInstance()->trans("Sunday")
-        ];
-
-        $points = [];
-
-        if (null !== $country = CountryQuery::create()->findPk($event->getCountryId())) {
-            $apiClient = new ApiClient(
-                new \SoapClient(MondialRelayPickupPoint::getConfigValue(MondialRelayPickupPoint::WEBSERVICE_URL)),
-                MondialRelayPickupPoint::getConfigValue(MondialRelayPickupPoint::CODE_ENSEIGNE),
-                MondialRelayPickupPoint::getConfigValue(MondialRelayPickupPoint::PRIVATE_KEY)
-            );
-
-            $cartWeightInGrammes = 1000 * $this->requestStack
-                ->getCurrentRequest()
-                ->getSession()
-                ->getSessionCart($dispatcher)
-                ->getWeight();
-
-            $requestParams = [
-                'NumPointRelais' => $event->getNumPointRelais(),
-                'Pays' => strtoupper($country->getIsoalpha2()),
-                'Ville' => $event->getCity(),
-                'CP' => $event->getZipcode(),
-                //'Latitude' => "",
-                //'Longitude' => "",
-                //'Taille' => "",
-                'Poids' => $cartWeightInGrammes,
-                //'Action' => "",
-                //'DelaiEnvoi' => "0",
-                'RayonRecherche' => $event->getSearchRadius()
-            ];
-
-            try {
-                $points = $apiClient->findDeliveryPoints($requestParams);
-            } catch (\Exception $ex) {
-                $points = [];
-
-                $event->setError($ex->getMessage());
-            }
-        }
-
-        $normalizedPoints = [];
-
-        /** @var Point $point */
-        foreach ($points as $point) {
-            $normalizedPoint = [
-                'id' => $point->id(),
-                'latitude' => $point->latitude(),
-                'longitude' => $point->longitude(),
-                'zipcode' => $point->cp(),
-                'city' => $point->city(),
-                'country' => $point->country()
-            ];
-
-            $addresses = $point->address();
-
-            $nom = $addresses[0];
-            if (! empty($adresses[1])) {
-                $nom .= '<br> ' . $addresses[1];
-            }
-
-            $normalizedPoint["name"] = $nom;
-
-            $address = $addresses[2];
-            if (! empty($adresses[3])) {
-                $address .= '<br> ' . $addresses[3];
-            }
-
-            $normalizedPoint["address"] = $address;
-
-
-            $horaires = [];
-
-            /** @var BussinessHours $horaire */
-            foreach ($point->business_hours() as $horaire) {
-                if ($horaire->openingTime1() != '0000' && $horaire->openingTime2() !== '0000') {
-                    $data = [ 'day' => $days[$horaire->day()]];
-
-                    $o1 = $horaire->openingTime1();
-                    $o2 = $horaire->openingTime2();
-
-                    if (! empty($o1) && $o1 != '0000') {
-                        $data['opening_time_1'] = $this->makeHoraire($horaire->openingTime1());
-                        $data['closing_time_1'] = $this->makeHoraire($horaire->closingTime1());
-                    }
-
-                    if (! empty($o2) && $o2 != '0000') {
-                        $data['opening_time_2'] = $this->makeHoraire($horaire->openingTime2());
-                        $data['closing_time_2'] = $this->makeHoraire($horaire->closingTime2());
-                    }
-
-                    $horaires[] = $data;
-                }
-            }
-
-            $normalizedPoint["openings"] = $horaires;
-
-            $normalizedPoints[] = $normalizedPoint;
-        }
-
-        $event->setPoints($normalizedPoints);
     }
 
     /**
@@ -204,7 +73,7 @@ class DeliveryListener extends BaseAction implements EventSubscriberInterface
                             ->setFirstname(
                                 Translator::getInstance()->trans(
                                     "Pickup relay #%number",
-                                    [ '%number' => $relayData['id']],
+                                    ['%number' => $relayData['id']],
                                     MondialRelayPickupPoint::DOMAIN_NAME
                                 )
                             )
@@ -272,6 +141,132 @@ class DeliveryListener extends BaseAction implements EventSubscriberInterface
         }
     }
 
+    public function findRelays(FindRelayEvent $event, $eventName, EventDispatcherInterface $dispatcher)
+    {
+        $days = [
+            'monday' => Translator::getInstance()->trans("Monday"),
+            'tuesday' => Translator::getInstance()->trans("Tuesday"),
+            'wednesday' => Translator::getInstance()->trans("Wednesday"),
+            'thursday' => Translator::getInstance()->trans("Thursday"),
+            'friday' => Translator::getInstance()->trans("Friday"),
+            'saturday' => Translator::getInstance()->trans("Saturday"),
+            'sunday' => Translator::getInstance()->trans("Sunday")
+        ];
+
+        if (null !== $country = CountryQuery::create()->findPk($event->getCountryId())) {
+
+            $cartWeightInGrammes = 1000 * $this->requestStack
+                    ->getCurrentRequest()
+                    ->getSession()
+                    ->getSessionCart($dispatcher)
+                    ->getWeight();
+
+            try {
+                $this->mondialRelayWebApi->_Api_CustomerCode =  MondialRelayPickupPoint::getConfigValue(MondialRelayPickupPoint::CODE_ENSEIGNE);
+                $this->mondialRelayWebApi->_Api_BrandId = "11";
+                $this->mondialRelayWebApi->_Api_SecretKey =  MondialRelayPickupPoint::getConfigValue(MondialRelayPickupPoint::PRIVATE_KEY);
+                $this->mondialRelayWebApi->_Api_Version = "2.0";
+
+                $result = $this->mondialRelayWebApi->SearchParcelShop(
+                    "FR",
+                    "63400",
+                    "",
+                    $cartWeightInGrammes
+                );
+
+                $points = [];
+
+                $pointFactory = new PointFactory();
+                $this->checkResponse('WSI3_PointRelais_Recherche', $result);
+
+                foreach ($result['WSI3_PointRelais_RechercheResult']['PointsRelais']['PointRelais_Details'] as $destination_point) {
+                    foreach ($destination_point as $key => $value) {
+                        if (!is_array($value)) {
+                            continue;
+                        }
+                        $destination_point[$key] = (object) $value;
+                    }
+
+                    $points[] = $pointFactory->create((object)$destination_point);
+                }
+
+            } catch (\Exception $ex) {
+                $points = [];
+
+                $event->setError($ex->getMessage());
+            }
+
+            $normalizedPoints = [];
+
+            /** @var Point $point */
+            foreach ($points as $point) {
+                $normalizedPoint = [
+                    'id' => $point->id(),
+                    'latitude' => $point->latitude(),
+                    'longitude' => $point->longitude(),
+                    'zipcode' => $point->cp(),
+                    'city' => $point->city(),
+                    'country' => $point->country()
+                ];
+
+                $addresses = $point->address();
+
+                $nom = $addresses[0];
+                if (!empty($adresses[1])) {
+                    $nom .= '<br> ' . $addresses[1];
+                }
+
+                $normalizedPoint["name"] = $nom;
+
+                $address = $addresses[2];
+                if (!empty($adresses[3])) {
+                    $address .= '<br> ' . $addresses[3];
+                }
+
+                $normalizedPoint["address"] = $address;
+
+
+                $horaires = [];
+
+                /** @var BussinessHours $horaire */
+                foreach ($point->business_hours() as $horaire) {
+                    if ($horaire->openingTime1() != '0000' && $horaire->openingTime2() !== '0000') {
+                        $data = ['day' => $days[$horaire->day()]];
+
+                        $o1 = $horaire->openingTime1();
+                        $o2 = $horaire->openingTime2();
+
+                        if (!empty($o1) && $o1 != '0000') {
+                            $data['opening_time_1'] = $this->makeHoraire($horaire->openingTime1());
+                            $data['closing_time_1'] = $this->makeHoraire($horaire->closingTime1());
+                        }
+
+                        if (!empty($o2) && $o2 != '0000') {
+                            $data['opening_time_2'] = $this->makeHoraire($horaire->openingTime2());
+                            $data['closing_time_2'] = $this->makeHoraire($horaire->closingTime2());
+                        }
+
+                        $horaires[] = $data;
+                    }
+                }
+
+                $normalizedPoint["openings"] = $horaires;
+
+                $normalizedPoints[] = $normalizedPoint;
+            }
+
+            $event->setPoints($normalizedPoints);
+        }
+    }
+
+    private function checkResponse($method, $result)
+    {
+        $method = $method . "Result";
+        if ($result[$method]['STAT'] != 0) {
+            throw new \InvalidArgumentException(sprintf('Error getting pmondial relai points : %s', ApiHelper::GetStatusCode($result[$method]['STAT'])));
+        }
+    }
+
     /**
      * Clear stored information once the order has been processed.
      *
@@ -295,7 +290,7 @@ class DeliveryListener extends BaseAction implements EventSubscriberInterface
             TheliaEvents::ORDER_BEFORE_PAYMENT => ['updateOrderDeliveryAddress', 256],
             TheliaEvents::ORDER_CART_CLEAR => ['clearDeliveryData', 256],
 
-            MondialRelayEvents::FIND_RELAYS => [ "findRelays" , 128]
+            MondialRelayEvents::FIND_RELAYS => ["findRelays", 128]
         ];
     }
 }

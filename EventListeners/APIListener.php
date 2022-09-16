@@ -25,14 +25,14 @@ use Thelia\Module\Exception\DeliveryException;
 
 class APIListener implements EventSubscriberInterface
 {
-    /** @var ContainerInterface  */
+    /** @var ContainerInterface */
     protected $container;
 
 
-    /** @var RequestStack  */
+    /** @var RequestStack */
     protected $requestStack;
 
-    /** @var EventDispatcherInterface  */
+    /** @var EventDispatcherInterface */
     protected $eventDispatcher;
 
     /**
@@ -50,7 +50,7 @@ class APIListener implements EventSubscriberInterface
     public function getDeliveryModuleOptions(DeliveryModuleOptionEvent $deliveryModuleOptionEvent)
     {
         if ($deliveryModuleOptionEvent->getModule()->getId() !== MondialRelayPickupPoint::getModuleId()) {
-            return ;
+            return;
         }
 
         $isValid = true;
@@ -74,7 +74,7 @@ class APIListener implements EventSubscriberInterface
             $areaConfiguration = MondialRelayPickupPointZoneConfigurationQuery::create()->filterByAreaId($area->getId())->findOne();
 
             $date = new \DateTime();
-            $minimumDeliveryDate = $date->add(new \DateInterval('P'.$areaConfiguration->getDeliveryTime().'D'));
+            $minimumDeliveryDate = $date->add(new \DateInterval('P' . $areaConfiguration->getDeliveryTime() . 'D'));
 
             /** @var DeliveryModuleOption $deliveryModuleOption */
             $deliveryModuleOption = ($this->container->get('open_api.model.factory'))->buildModel('DeliveryModuleOption');
@@ -87,8 +87,7 @@ class APIListener implements EventSubscriberInterface
                 ->setMaximumDeliveryDate(null)
                 ->setPostage(($orderPostage) ? $orderPostage->getAmount() : 0)
                 ->setPostageTax(($orderPostage) ? $orderPostage->getAmountTax() : 0)
-                ->setPostageUntaxed(($orderPostage) ? $orderPostage->getAmount() - $orderPostage->getAmountTax() : 0)
-            ;
+                ->setPostageUntaxed(($orderPostage) ? $orderPostage->getAmount() - $orderPostage->getAmountTax() : 0);
 
             $deliveryModuleOptionEvent->appendDeliveryModuleOptions($deliveryModuleOption);
         }
@@ -100,7 +99,7 @@ class APIListener implements EventSubscriberInterface
     {
         if (null !== $moduleIds = $pickupLocationEvent->getModuleIds()) {
             if (!in_array(MondialRelayPickupPoint::getModuleId(), $moduleIds)) {
-                return ;
+                return;
             }
         }
 
@@ -112,12 +111,12 @@ class APIListener implements EventSubscriberInterface
             $country->getId(),
             $pickupLocationEvent->getCity(),
             $pickupLocationEvent->getZipCode(),
-            (float)($pickupLocationEvent->getRadius() ? : 10)
+            (float)($pickupLocationEvent->getRadius() ?: 10)
         );
 
         $this->eventDispatcher->dispatch($findRelayEvent, MondialRelayEvents::FIND_RELAYS);
 
-        foreach ($findRelayEvent->getPoints() as $point){
+        foreach ($findRelayEvent->getPoints() as $point) {
             $pickupLocationEvent->appendLocation($this->createPickupLocationFromResponse($point));
         }
 
@@ -133,8 +132,7 @@ class APIListener implements EventSubscriberInterface
             ->setAddress($this->createPickupLocationAddressFromResponse($point))
             ->setLatitude($point['latitude'])
             ->setLongitude($point['longitude'])
-            ->setModuleId(MondialRelayPickupPoint::getModuleId())
-        ;
+            ->setModuleId(MondialRelayPickupPoint::getModuleId());
 
         $pickupLocation = $this->setOpeningHours($pickupLocation, $point['openings']);
 
@@ -144,8 +142,12 @@ class APIListener implements EventSubscriberInterface
     public function setOpeningHours(PickupLocation $pickupLocation, $openings)
     {
         foreach ($openings as $opening) {
+            if(!isset($opening['opening_time_1'])){
+                continue;
+            }
+
             $openingDay = '';
-            switch ($opening['day']){
+            switch ($opening['day']) {
                 case 'Monday':
                     $openingDay = PickupLocation::MONDAY_OPENING_HOURS_KEY;
                     break;
@@ -169,9 +171,15 @@ class APIListener implements EventSubscriberInterface
                     break;
 
             }
+
+            $openTime1 = isset($opening['opening_time_1']) ? $opening['opening_time_1'] : '';
+            $closeTime1 = isset($opening['closing_time_1']) ? $opening['closing_time_1'] : '';
+            $openTime2 = isset($opening['opening_time_2']) ? $opening['opening_time_2'] : '';
+            $closeTime2 = isset($opening['closing_time_2']) ? $opening['closing_time_2'] : '';
+
             $pickupLocation->setOpeningHours(
                 $openingDay,
-                $opening['opening_time_1'].'-'.$opening['closing_time_1'].' '.$opening['opening_time_2'].'-'.$opening['closing_time_2']
+                $openTime1 . ' ' . $closeTime1 . ' ' . $openTime2 . ' ' . $closeTime2
             );
         }
         return $pickupLocation;
@@ -198,8 +206,7 @@ class APIListener implements EventSubscriberInterface
             ->setLastName('')
             ->setIsDefault(0)
             ->setLabel('')
-            ->setAdditionalData([])
-        ;
+            ->setAdditionalData([]);
 
         return $pickupLocationAddress;
     }
