@@ -5,7 +5,8 @@
   "type": "thelia-module",
   "require": {
     "thelia/installer": "~1.1",
-    "xaviborja/php-mondialrelay-api": "dev-master"
+    "xaviborja/php-mondialrelay-api": "dev-master",
+    "econea/nusoap" : "~0.9.12"
   },
   "extra": {
     "installer-name": "MondialRelayPickupPoint"
