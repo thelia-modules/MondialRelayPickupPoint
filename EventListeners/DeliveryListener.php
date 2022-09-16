@@ -168,8 +168,8 @@ class DeliveryListener extends BaseAction implements EventSubscriberInterface
                 $this->mondialRelayWebApi->_Api_Version = "2.0";
 
                 $result = $this->mondialRelayWebApi->SearchParcelShop(
-                    "FR",
-                    "63400",
+                    strtoupper($country->getIsoalpha2()),
+                    $event->getZipcode(),
                     "",
                     $cartWeightInGrammes
                 );
