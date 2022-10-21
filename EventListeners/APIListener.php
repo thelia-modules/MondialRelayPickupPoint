@@ -59,6 +59,8 @@ class APIListener implements EventSubscriberInterface
         $module = new MondialRelayPickupPoint();
         $country = $deliveryModuleOptionEvent->getCountry();
 
+        $locale = $this->requestStack->getCurrentRequest()->getSession()->getLang()->getLocale();
+
         if (empty($countryAreas = $module->getAreaForCountry($country))) {
             throw new DeliveryException(Translator::getInstance()->trans("Your delivery country is not covered by Mondial Relay"));
         }
@@ -81,7 +83,7 @@ class APIListener implements EventSubscriberInterface
             $deliveryModuleOption
                 ->setCode('MondialRelayPickupPoint')
                 ->setValid($isValid)
-                ->setTitle('Mondial Relay Pickup point delivery')
+                ->setTitle($deliveryModuleOptionEvent->getModule()->setLocale($locale)->getTitle())
                 ->setImage('')
                 ->setMinimumDeliveryDate($minimumDeliveryDate->format('d/m/Y'))
                 ->setMaximumDeliveryDate(null)
