@@ -7,8 +7,10 @@ use MondialRelayPickupPoint\Model\MondialRelayPickupPointInsurance;
 use MondialRelayPickupPoint\Model\MondialRelayPickupPointPrice;
 use MondialRelayPickupPoint\Model\MondialRelayPickupPointPriceQuery;
 use MondialRelayPickupPoint\Model\MondialRelayPickupPointZoneConfiguration;
+use PDO;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\Connection\ConnectionInterface;
+use Propel\Runtime\Propel;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ServicesConfigurator;
 use Symfony\Component\Finder\Finder;
 use Thelia\Core\Translation\Translator;
@@ -43,6 +45,10 @@ class MondialRelayPickupPoint extends AbstractDeliveryModule
     const PRIVATE_KEY    = 'private_key';
     const WEBSERVICE_URL = 'webservice_url';
     const GOOGLE_MAPS_API_KEY = 'google_maps_api_key';
+
+    const MONDIAL_RELAY_USERNAME = 'mondial_relay_pickup_point_username';
+    const MONDIAL_RELAY_PASSWORD = 'mondial_relay_pickup_point_password';
+
 
     const ALLOW_RELAY_DELIVERY = 'allow_relay_delivery';
     const ALLOW_HOME_DELIVERY  = 'allow_home_delivery';
@@ -227,11 +233,10 @@ class MondialRelayPickupPoint extends AbstractDeliveryModule
     {
         $request = $this->getRequest();
 
-        $orderPostage = 0;
-
         $cartWeight = $request->getSession()->getSessionCart($this->getDispatcher())->getWeight();
+        $cartAmount = $request->getSession()->getSessionCart($this->getDispatcher())->getTaxedAmount($country);
 
-        if (null === $orderPostage = $this->getMinPostage($country, $request->getSession()->getLang()->getLocale(), $cartWeight)) {
+        if (null === $orderPostage = $this->getMinPostage($country, $request->getSession()->getLang()->getLocale(), $cartWeight, $cartAmount)) {
             throw new DeliveryException('Mondial Relay unavailable for your cart weight or delivery country');
         }
 
@@ -250,31 +255,107 @@ class MondialRelayPickupPoint extends AbstractDeliveryModule
             ->find();
     }
 
-    public function getMinPostage($country, $locale, $weight = 0)
+    /**
+     * Returns ids of area containing this country and covered by this module.
+     *
+     * @return array Area ids
+     */
+    public function getAllAreasForCountry(Country $country)
+    {
+        $areaArray = [];
+
+        $sql = 'SELECT ca.area_id as area_id FROM country_area ca
+               INNER JOIN area_delivery_module adm ON (ca.area_id = adm.area_id AND adm.delivery_module_id = :p0)
+               WHERE ca.country_id = :p1';
+
+        $con = Propel::getConnection();
+
+        $stmt = $con->prepare($sql);
+        $stmt->bindValue(':p0', $this->getModuleModel()->getId(), PDO::PARAM_INT);
+        $stmt->bindValue(':p1', $country->getId(), PDO::PARAM_INT);
+        $stmt->execute();
+
+        while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
+            $areaArray[] = $row['area_id'];
+        }
+
+        return $areaArray;
+    }
+
+    /**
+     * @param $areaId
+     * @param $weight
+     * @param $cartAmount
+     * @param $deliverModeCode
+     *
+     * @return mixed
+     *
+     * @throws DeliveryException
+     */
+    public static function getPostageAmount($areaId, $weight, $cartAmount = 0)
+    {
+        $freeshipping = self::getConfigValue("mondial_relay_home_delivery_free_shipping_active");
+        $freeshippingFrom = self::getConfigValue("mondial_relay_home_delivery_free_shipping_from");
+
+        /** Set the initial postage price as 0 */
+        $postage = 0;
+
+        /* If free shipping is enabled, skip and return 0 */
+        if (!$freeshipping) {
+            /* If a min price for general freeshipping is defined and the cart reach this amount, return a postage of 0 */
+            if (null !== $freeshippingFrom && $freeshippingFrom <= $cartAmount) {
+                return 0;
+            }
+
+            /** Search the list of prices and order it in ascending order */
+            $areaPrices = MondialRelayPickupPointPriceQuery::create()
+                ->filterByAreaId($areaId)
+                ->_or()
+                ->filterByMaxWeight(null)
+            ;
+
+            /** Find the correct postage price for the cart weight and price according to the area and delivery mode in $areaPrices*/
+            $firstPrice = $areaPrices->find()
+                ->getFirst();
+
+            if (null === $firstPrice) {
+                return null;
+                //throw new DeliveryException("MondialRelay delivery unavailable for your cart weight or delivery country");
+            }
+
+            $postage = $firstPrice->getPriceWithTax();
+        }
+        return $postage;
+    }
+
+    public function getMinPostage($country, $locale, $weight = 0, $amount = 0)
     {
         $minPostage = null;
 
-        $deliveryAreas = $this->getAreaForCountry($country);
+        $areaIdArray = $this->getAllAreasForCountry($country);
+        if (empty($areaIdArray)) {
+            throw new DeliveryException('Your delivery country is not covered by Mondial Relay.');
+        }
 
-        foreach ($deliveryAreas as $deliveryArea) {
-            $mondialRelayDeliveryPrice = MondialRelayPickupPointPriceQuery::create()
-                ->filterByAreaId($deliveryArea->getId())
-                ->filterByMaxWeight($weight, Criteria::GREATER_EQUAL)
-                ->orderByPriceWithTax()
-                ->findOne();
-
-            if (!$mondialRelayDeliveryPrice){
-                continue;
-            }
-
-            $postage = $mondialRelayDeliveryPrice->getPriceWithTax();
-
-            if ($minPostage === null || $postage < $minPostage) {
-                $minPostage = $postage;
-                if ($minPostage == 0) {
-                    break;
+        foreach ($areaIdArray as $areaId) {
+            try {
+                $postage = self::getPostageAmount($areaId, $weight, $amount);
+                if (null === $postage) {
+                    continue ;
                 }
+                if ($minPostage === null || $postage < $minPostage) {
+                    $minPostage = $postage;
+                    if ($minPostage == 0) {
+                        break;
+                    }
+                }
+            } catch (\Exception $ex) {
+                throw new DeliveryException($ex->getMessage());
             }
+        }
+
+        if (null === $minPostage) {
+            throw new DeliveryException("Mondial Relay delivery unavailable for your cart weight or delivery country");
         }
 
         return $minPostage === null ? $minPostage : $this->buildOrderPostage($minPostage, $country, $locale);

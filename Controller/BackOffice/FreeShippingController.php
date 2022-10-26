@@ -26,6 +26,7 @@ namespace MondialRelayPickupPoint\Controller\BackOffice;
 use MondialRelayPickupPoint\Form\FreeShippingForm;
 use MondialRelayPickupPoint\Model\MondialRelayPickupPointFreeshipping;
 use MondialRelayPickupPoint\Model\MondialRelayPickupPointFreeshippingQuery;
+use MondialRelayPickupPoint\MondialRelayPickupPoint;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Thelia\Controller\Admin\BaseAdminController;
@@ -52,15 +53,8 @@ class FreeShippingController extends BaseAdminController
             $freeshipping = $vform->get('freeshipping')->getData();
             $freeshippingFrom = $vform->get('freeshipping_from')->getData();
 
-            if (null === $isFreeShippingActive = MondialRelayPickupPointFreeshippingQuery::create()->findOneById(1)){
-                $isFreeShippingActive = new MondialRelayPickupPointFreeshipping();
-            }
-
-            $isFreeShippingActive
-                ->setActive($freeshipping)
-                ->setFreeshippingFrom($freeshippingFrom)
-            ;
-            $isFreeShippingActive->save();
+            MondialRelayPickupPoint::setConfigValue("mondial_relay_pickup_point_free_shipping_active",$freeshipping);
+            MondialRelayPickupPoint::setConfigValue("mondial_relay_pickup_point_free_shipping_from", $freeshippingFrom);
 
             $response = $this->generateRedirectFromRoute(
                 'admin.module.configure',

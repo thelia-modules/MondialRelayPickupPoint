@@ -69,7 +69,7 @@ class FreeShippingForm extends BaseForm
                 [
                     'required'  => false,
                     'label'     => Translator::getInstance()->trans("Free shipping from: ", [], MondialRelayPickupPoint::DOMAIN_NAME),
-                    'data'      => MondialRelayPickupPointFreeshippingQuery::create()->findOneById(1)->getFreeshippingFrom(),
+                    'data'      => MondialRelayPickupPoint::getConfigValue("mondial_relay_pickup_point_free_shipping_from"),
                     'scale'     => 2,
                 ]
             )

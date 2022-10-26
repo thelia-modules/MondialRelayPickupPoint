@@ -2,7 +2,8 @@
 
 namespace MondialRelayPickupPoint\EventListeners;
 
-use ColissimoPickupPoint\ColissimoPickupPoint;
+use ColissimoPickupPoint\WebService\FindByAddress;
+use InvalidArgumentException;
 use MondialRelayPickupPoint\Event\FindRelayEvent;
 use MondialRelayPickupPoint\Event\MondialRelayEvents;
 use MondialRelayPickupPoint\Model\MondialRelayPickupPointZoneConfigurationQuery;
@@ -77,24 +78,22 @@ class APIListener implements EventSubscriberInterface
 
             $date = new \DateTime();
             $minimumDeliveryDate = $date->add(new \DateInterval('P' . $areaConfiguration->getDeliveryTime() . 'D'));
-
-            /** @var DeliveryModuleOption $deliveryModuleOption */
-            $deliveryModuleOption = ($this->container->get('open_api.model.factory'))->buildModel('DeliveryModuleOption');
-            $deliveryModuleOption
-                ->setCode('MondialRelayPickupPoint')
-                ->setValid($isValid)
-                ->setTitle($deliveryModuleOptionEvent->getModule()->setLocale($locale)->getTitle())
-                ->setImage('')
-                ->setMinimumDeliveryDate($minimumDeliveryDate->format('d/m/Y'))
-                ->setMaximumDeliveryDate(null)
-                ->setPostage(($orderPostage) ? $orderPostage->getAmount() : 0)
-                ->setPostageTax(($orderPostage) ? $orderPostage->getAmountTax() : 0)
-                ->setPostageUntaxed(($orderPostage) ? $orderPostage->getAmount() - $orderPostage->getAmountTax() : 0);
-
-            $deliveryModuleOptionEvent->appendDeliveryModuleOptions($deliveryModuleOption);
         }
 
+        /** @var DeliveryModuleOption $deliveryModuleOption */
+        $deliveryModuleOption = ($this->container->get('open_api.model.factory'))->buildModel('DeliveryModuleOption');
+        $deliveryModuleOption
+            ->setCode('MondialRelayPickupPoint')
+            ->setValid($isValid)
+            ->setTitle($deliveryModuleOptionEvent->getModule()->setLocale($locale)->getTitle())
+            ->setImage('')
+            ->setMinimumDeliveryDate($minimumDeliveryDate->format('d/m/Y'))
+            ->setMaximumDeliveryDate(null)
+            ->setPostage(($orderPostage) ? $orderPostage->getAmount() : 0)
+            ->setPostageTax(($orderPostage) ? $orderPostage->getAmountTax() : 0)
+            ->setPostageUntaxed(($orderPostage) ? $orderPostage->getAmount() - $orderPostage->getAmountTax() : 0);
 
+        $deliveryModuleOptionEvent->appendDeliveryModuleOptions($deliveryModuleOption);
     }
 
     public function getPickupLocations(PickupLocationEvent $pickupLocationEvent)
@@ -121,7 +120,6 @@ class APIListener implements EventSubscriberInterface
         foreach ($findRelayEvent->getPoints() as $point) {
             $pickupLocationEvent->appendLocation($this->createPickupLocationFromResponse($point));
         }
-
     }
 
     protected function createPickupLocationFromResponse(array $point)
