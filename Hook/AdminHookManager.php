@@ -26,6 +26,7 @@ class AdminHookManager extends BaseHook
             'allow_relay_delivery' =>  MondialRelayPickupPoint::getConfigValue(MondialRelayPickupPoint::ALLOW_RELAY_DELIVERY),
             'allow_home_delivery' =>  MondialRelayPickupPoint::getConfigValue(MondialRelayPickupPoint::ALLOW_HOME_DELIVERY),
             'allow_insurance' =>  MondialRelayPickupPoint::getConfigValue(MondialRelayPickupPoint::ALLOW_INSURANCE),
+            "mondial_relay_pickup_point_free_shipping_active" => MondialRelayPickupPoint::getConfigValue("mondial_relay_pickup_point_free_shipping_active"),
 
             'module_id' =>  MondialRelayPickupPoint::getModuleId()
         ];

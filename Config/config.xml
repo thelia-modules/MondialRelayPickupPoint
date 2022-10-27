@@ -12,6 +12,8 @@
         <loop name="mondialrelaypickuppoint.delivery-price" class="MondialRelayPickupPoint\Loop\DeliveryPrice" />
         <loop name="mondialrelaypickuppoint.pickup-points" class="MondialRelayPickupPoint\Loop\PickupPoints" />
         <loop name="mondialrelaypickuppoint.selected-pickup-point" class="MondialRelayPickupPoint\Loop\SelectedPickupPoint" />
+
+        <loop name="mondialrelaypickuppoint.freeshipping" class="MondialRelayPickupPoint\Loop\FreeShipping" />
     </loops>
 
     <forms>
@@ -24,6 +26,8 @@
 
         <form name="mondialrelaypickuppoint.insurances_update_form" class="MondialRelayPickupPoint\Form\InsurancesUpdateForm" />
         <form name="mondialrelaypickuppoint.insurance_create_form" class="MondialRelayPickupPoint\Form\InsuranceCreateForm" />
+
+        <form name="mondialrelaypickuppoint_freeshipping_form" class="MondialRelayPickupPoint\Form\FreeShippingForm" />
     </forms>
 
     <hooks>
