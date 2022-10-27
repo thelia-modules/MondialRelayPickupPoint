@@ -24,6 +24,7 @@
 namespace MondialRelayPickupPoint\Controller\BackOffice;
 
 use MondialRelayPickupPoint\Form\FreeShippingForm;
+use MondialRelayPickupPoint\Model\MondialRelayPickupPointAreaFreeshippingQuery;
 use MondialRelayPickupPoint\Model\MondialRelayPickupPointFreeshipping;
 use MondialRelayPickupPoint\Model\MondialRelayPickupPointFreeshippingQuery;
 use MondialRelayPickupPoint\MondialRelayPickupPoint;
@@ -71,5 +72,46 @@ class FreeShippingController extends BaseAdminController
             $response = JsonResponse::create(array('error' => $e->getMessage()), 500);
         }
         return $response;
+    }
+
+    /**
+     * @return mixed|Response|null
+     */
+    public function setAreaFreeShipping()
+    {
+        if (null !== $response = $this
+                ->checkAuth(array(AdminResources::MODULE), array('MondialRelayPickupPoint'), AccessManager::UPDATE)) {
+            return $response;
+        }
+
+        try {
+            $data = $this->getRequest()->request;
+
+            $mondial_relay_pickup_point_area_id = $data->get('area-id');
+
+            $cartAmount = $data->get('cart-amount');
+
+            if ($cartAmount < 0 || $cartAmount === '') {
+                $cartAmount = null;
+            }
+
+            $areaQuery = AreaQuery::create()->findOneById($mondial_relay_pickup_point_area_id);
+            if (null === $areaQuery) {
+                return null;
+            }
+
+            $mondialRelayPickupPointAreaFreeshipping = MondialRelayPickupPointAreaFreeshippingQuery::create()
+                ->filterByAreaId($mondial_relay_pickup_point_area_id)
+                ->findOneOrCreate();
+
+            $mondialRelayPickupPointAreaFreeshipping
+                ->setAreaId($mondial_relay_pickup_point_area_id)
+                ->setCartAmount($cartAmount)
+                ->save();
+
+        } catch (\Exception $e) {
+        }
+
+        return $this->generateRedirect(URL::getInstance()->absoluteUrl('/admin/module/MondialRelayPickupPoint'));
     }
 }
