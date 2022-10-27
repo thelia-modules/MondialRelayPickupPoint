@@ -14,6 +14,8 @@
         <loop name="mondialrelaypickuppoint.selected-pickup-point" class="MondialRelayPickupPoint\Loop\SelectedPickupPoint" />
 
         <loop name="mondialrelaypickuppoint.freeshipping" class="MondialRelayPickupPoint\Loop\FreeShipping" />
+        <loop name="mondialrelaypickuppoint.area.freeshipping" class="MondialRelayPickupPoint\Loop\AreaFreeShipping" />
+
     </loops>
 
     <forms>

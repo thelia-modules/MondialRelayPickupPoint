@@ -61,10 +61,13 @@
         <default key="_controller">MondialRelayPickupPoint\Controller\FrontOffice\MapManagement::getRelayMapAction</default>
     </route>
 
-    <!-- Price Slices -->
+    <!-- Free Shipping -->
 
     <route id="mondial_relay_pickup_point.toggle.freeshipping" path="/admin/module/MondialRelayPickupPoint/freeshipping" methods="post">
         <default key="_controller">MondialRelayPickupPoint\Controller\BackOffice\FreeShippingController::toggleFreeShippingActivation</default>
+    </route>
+    <route id="mondial_relay_pickup_point.edit.area.freeshipping" path="/admin/module/MondialRelayPickupPoint/area_freeshipping" methods="post">
+        <default key="_controller">MondialRelayPickupPoint\Controller\BackOffice\FreeShippingController::setAreaFreeShipping</default>
     </route>
 
 </routes>

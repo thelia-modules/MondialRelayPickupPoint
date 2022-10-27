@@ -3,6 +3,7 @@
 namespace MondialRelayPickupPoint;
 
 
+use MondialRelayPickupPoint\Model\MondialRelayPickupPointAreaFreeshippingQuery;
 use MondialRelayPickupPoint\Model\MondialRelayPickupPointInsurance;
 use MondialRelayPickupPoint\Model\MondialRelayPickupPointPrice;
 use MondialRelayPickupPoint\Model\MondialRelayPickupPointPriceQuery;
@@ -304,6 +305,22 @@ class MondialRelayPickupPoint extends AbstractDeliveryModule
         if (!$freeshipping) {
             /* If a min price for general freeshipping is defined and the cart reach this amount, return a postage of 0 */
             if (null !== $freeshippingFrom && $freeshippingFrom <= $cartAmount) {
+                return 0;
+            }
+
+            $areaFreeshipping = MondialRelayPickupPointAreaFreeshippingQuery::create()
+                ->filterByAreaId($areaId)
+                ->findOne()
+            ;
+
+            if ($areaFreeshipping) {
+                $areaFreeshipping = $areaFreeshipping->getCartAmount();
+            }
+
+            /* If the cart price is superior to the minimum price for free shipping in the area of the order,
+             * return the postage as free.
+             */
+            if (null !== $areaFreeshipping && $areaFreeshipping <= $cartAmount) {
                 return 0;
             }
 
