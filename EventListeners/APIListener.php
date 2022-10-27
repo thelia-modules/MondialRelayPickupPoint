@@ -2,6 +2,7 @@
 
 namespace MondialRelayPickupPoint\EventListeners;
 
+use ColissimoLabel\Exception\Exception;
 use ColissimoPickupPoint\WebService\FindByAddress;
 use InvalidArgumentException;
 use MondialRelayPickupPoint\Event\FindRelayEvent;
@@ -55,7 +56,6 @@ class APIListener implements EventSubscriberInterface
         }
 
         $isValid = true;
-
 
         $module = new MondialRelayPickupPoint();
         $country = $deliveryModuleOptionEvent->getCountry();

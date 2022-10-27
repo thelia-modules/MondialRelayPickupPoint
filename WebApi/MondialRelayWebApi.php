@@ -135,6 +135,7 @@ class MondialRelayWebApi
             $secString .= $prm;
         }
         $ParameterArray['Security'] = strtoupper(md5(utf8_decode($secString . $this->_Api_SecretKey)));
+
         return $ParameterArray;
     }
 
@@ -168,7 +169,6 @@ class MondialRelayWebApi
             echo '</div>';
 
         }
-
 
         return $result;
     }

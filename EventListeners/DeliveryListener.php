@@ -161,6 +161,7 @@ class DeliveryListener extends BaseAction implements EventSubscriberInterface
                     ->getSessionCart($dispatcher)
                     ->getWeight();
 
+
             try {
                 $this->mondialRelayWebApi->_Api_CustomerCode =  MondialRelayPickupPoint::getConfigValue(MondialRelayPickupPoint::CODE_ENSEIGNE);
                 $this->mondialRelayWebApi->_Api_BrandId = "11";
@@ -192,7 +193,6 @@ class DeliveryListener extends BaseAction implements EventSubscriberInterface
 
             } catch (\Exception $ex) {
                 $points = [];
-
                 $event->setError($ex->getMessage());
             }
 
@@ -263,7 +263,7 @@ class DeliveryListener extends BaseAction implements EventSubscriberInterface
     {
         $method = $method . "Result";
         if ($result[$method]['STAT'] != 0) {
-            throw new \InvalidArgumentException(sprintf('Error getting pmondial relai points : %s', ApiHelper::GetStatusCode($result[$method]['STAT'])));
+            throw new \InvalidArgumentException(sprintf('Error getting mondial relai points : %s', ApiHelper::GetStatusCode($result)));
         }
     }
 
