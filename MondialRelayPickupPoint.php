@@ -294,8 +294,8 @@ class MondialRelayPickupPoint extends AbstractDeliveryModule
      */
     public static function getPostageAmount($areaId, $weight, $cartAmount = 0)
     {
-        $freeshipping = self::getConfigValue("mondial_relay_home_delivery_free_shipping_active");
-        $freeshippingFrom = self::getConfigValue("mondial_relay_home_delivery_free_shipping_from");
+        $freeshipping = self::getConfigValue("mondial_relay_pickup_point_free_shipping_active", false);
+        $freeshippingFrom = self::getConfigValue("mondial_relay_pickup_point_free_shipping_from", null);
 
         /** Set the initial postage price as 0 */
         $postage = 0;
