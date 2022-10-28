@@ -327,8 +327,8 @@ class MondialRelayPickupPoint extends AbstractDeliveryModule
             /** Search the list of prices and order it in ascending order */
             $areaPrices = MondialRelayPickupPointPriceQuery::create()
                 ->filterByAreaId($areaId)
-                ->_or()
-                ->filterByMaxWeight(null)
+                ->filterByMaxWeight($weight, Criteria::LESS_EQUAL)
+                ->orderByMaxWeight(Criteria::DESC)
             ;
 
             /** Find the correct postage price for the cart weight and price according to the area and delivery mode in $areaPrices*/
