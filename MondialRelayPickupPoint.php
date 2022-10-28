@@ -327,8 +327,8 @@ class MondialRelayPickupPoint extends AbstractDeliveryModule
             /** Search the list of prices and order it in ascending order */
             $areaPrices = MondialRelayPickupPointPriceQuery::create()
                 ->filterByAreaId($areaId)
-                ->filterByMaxWeight($weight, Criteria::LESS_EQUAL)
-                ->orderByMaxWeight(Criteria::DESC)
+                ->filterByMaxWeight($weight, Criteria::GREATER_THAN)
+                ->orderByMaxWeight(Criteria::ASC)
             ;
 
             /** Find the correct postage price for the cart weight and price according to the area and delivery mode in $areaPrices*/
@@ -369,10 +369,6 @@ class MondialRelayPickupPoint extends AbstractDeliveryModule
             } catch (\Exception $ex) {
                 throw new DeliveryException($ex->getMessage());
             }
-        }
-
-        if (null === $minPostage) {
-            throw new DeliveryException("Mondial Relay delivery unavailable for your cart weight or delivery country");
         }
 
         return $minPostage === null ? $minPostage : $this->buildOrderPostage($minPostage, $country, $locale);
