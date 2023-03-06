@@ -59,7 +59,7 @@ class APIListener implements EventSubscriberInterface
 
         $module = new MondialRelayPickupPoint();
         $country = $deliveryModuleOptionEvent->getCountry();
- 	$minimumDeliveryDate = null;
+        $minimumDeliveryDate = null;
         $orderPostage = null;
 
         $locale = $this->requestStack->getCurrentRequest()->getSession()->getLang()->getLocale();
@@ -90,7 +90,7 @@ class APIListener implements EventSubscriberInterface
             ->setValid($isValid)
             ->setTitle($deliveryModuleOptionEvent->getModule()->setLocale($locale)->getTitle())
             ->setImage('')
-            ->setMinimumDeliveryDate($minimumDeliveryDate->format('d/m/Y'))
+            ->setMinimumDeliveryDate(($minimumDeliveryDate) ? $minimumDeliveryDate->format('d/m/Y') : null)
             ->setMaximumDeliveryDate(null)
             ->setPostage(($orderPostage) ? $orderPostage->getAmount() : 0)
             ->setPostageTax(($orderPostage) ? $orderPostage->getAmountTax() : 0)
@@ -145,7 +145,7 @@ class APIListener implements EventSubscriberInterface
     public function setOpeningHours(PickupLocation $pickupLocation, $openings)
     {
         foreach ($openings as $opening) {
-            if(!isset($opening['opening_time_1'])){
+            if (!isset($opening['opening_time_1'])) {
                 continue;
             }
 
@@ -172,7 +172,6 @@ class APIListener implements EventSubscriberInterface
                 case 'Sunday':
                     $openingDay = PickupLocation::SUNDAY_OPENING_HOURS_KEY;
                     break;
-
             }
 
             $openTime1 = isset($opening['opening_time_1']) ? $opening['opening_time_1'] : '';
