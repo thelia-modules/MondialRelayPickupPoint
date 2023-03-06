@@ -59,6 +59,8 @@ class APIListener implements EventSubscriberInterface
 
         $module = new MondialRelayPickupPoint();
         $country = $deliveryModuleOptionEvent->getCountry();
+ 	$minimumDeliveryDate = null;
+        $orderPostage = null;
 
         $locale = $this->requestStack->getCurrentRequest()->getSession()->getLang()->getLocale();
 
