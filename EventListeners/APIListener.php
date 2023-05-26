@@ -79,8 +79,7 @@ class APIListener implements EventSubscriberInterface
             );
             $areaConfiguration = MondialRelayPickupPointZoneConfigurationQuery::create()->filterByAreaId($area->getId())->findOne();
 
-            $date = new \DateTime();
-            $minimumDeliveryDate = $date->add(new \DateInterval('P' . $areaConfiguration->getDeliveryTime() . 'D'));
+            $minimumDeliveryDate = $areaConfiguration ? (new \DateTime())->add(new \DateInterval('P' . $areaConfiguration->getDeliveryTime() . 'D')) : null;
         }
 
         /** @var DeliveryModuleOption $deliveryModuleOption */
