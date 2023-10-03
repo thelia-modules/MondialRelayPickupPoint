@@ -4,13 +4,13 @@ namespace MondialRelayPickupPoint;
 
 
 use MondialRelayPickupPoint\Model\MondialRelayPickupPointAreaFreeshippingQuery;
-use MondialRelayPickupPoint\Model\MondialRelayPickupPointInsurance;
 use MondialRelayPickupPoint\Model\MondialRelayPickupPointPrice;
 use MondialRelayPickupPoint\Model\MondialRelayPickupPointPriceQuery;
 use MondialRelayPickupPoint\Model\MondialRelayPickupPointZoneConfiguration;
 use PDO;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\Connection\ConnectionInterface;
+use Propel\Runtime\Exception\PropelException;
 use Propel\Runtime\Propel;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ServicesConfigurator;
 use Symfony\Component\Finder\Finder;
@@ -20,7 +20,7 @@ use Thelia\Install\Database;
 use Thelia\Model\Area;
 use Thelia\Model\AreaDeliveryModule;
 use Thelia\Model\AreaQuery;
-use Thelia\Model\ConfigQuery;
+use Thelia\Model\Base\State;
 use Thelia\Model\Country;
 use Thelia\Model\CountryArea;
 use Thelia\Model\CountryQuery;
@@ -31,13 +31,10 @@ use Thelia\Model\Message;
 use Thelia\Model\MessageQuery;
 use Thelia\Model\ModuleImageQuery;
 use Thelia\Model\OrderPostage;
-use Thelia\Model\TaxRuleQuery;
-use Thelia\Module\AbstractDeliveryModule;
-use Thelia\Module\BaseModule;
+use Thelia\Module\AbstractDeliveryModuleWithState;
 use Thelia\Module\Exception\DeliveryException;
-use Thelia\TaxEngine\Calculator;
 
-class MondialRelayPickupPoint extends AbstractDeliveryModule
+class MondialRelayPickupPoint extends AbstractDeliveryModuleWithState
 {
     /** @var string */
     const DOMAIN_NAME = 'mondialrelaypickuppoint';
@@ -60,6 +57,8 @@ class MondialRelayPickupPoint extends AbstractDeliveryModule
     const SESSION_SELECTED_DELIVERY_TYPE = 'MondialRelaySelectedDeliveryType';
 
     const TRACKING_MESSAGE_NAME = 'mondial-relay-pickup-point-tracking-message';
+
+    const MONDIAL_RELAY_PICKUP_POINT_TAX_RULE_ID = 'mondial_relay_pickup_point_tax_rule_id';
 
     const MAX_WEIGHT_KG = 30;
     const MIN_WEIGHT_KG = 0.1;
@@ -213,11 +212,12 @@ class MondialRelayPickupPoint extends AbstractDeliveryModule
      * If you return true, the delivery method will de displayed to the customer
      * If you return false, the delivery method will not be displayed
      *
-     * @param Country $country the country to deliver to.
      *
+     * @param Country $country
+     * @param State|null $state
      * @return boolean
      */
-    public function isValidDelivery(Country $country)
+    public function isValidDelivery(Country $country, State $state = null)
     {
         return !empty($this->getAreaForCountry($country)->getData());
     }
@@ -225,12 +225,13 @@ class MondialRelayPickupPoint extends AbstractDeliveryModule
     /**
      * Calculate and return delivery price in the shop's default currency
      *
-     * @param Country $country the country to deliver to.
      *
+     * @param Country $country
+     * @param State|null $state
      * @return OrderPostage|float             the delivery price
-     * @throws DeliveryException if the postage price cannot be calculated.
+     * @throws PropelException if the postage price cannot be calculated.
      */
-    public function getPostage(Country $country)
+    public function getPostage(Country $country, State $state = null)
     {
         $request = $this->getRequest();
 
@@ -244,7 +245,7 @@ class MondialRelayPickupPoint extends AbstractDeliveryModule
         return $orderPostage;
     }
 
-    public function getAreaForCountry(Country $country)
+    public function getAreaForCountry(Country $country, State $state = null)
     {
         return AreaQuery::create()
             ->useAreaDeliveryModuleQuery()
@@ -286,12 +287,9 @@ class MondialRelayPickupPoint extends AbstractDeliveryModule
     /**
      * @param $areaId
      * @param $weight
-     * @param $cartAmount
-     * @param $deliverModeCode
-     *
+     * @param int $cartAmount
      * @return mixed
      *
-     * @throws DeliveryException
      */
     public static function getPostageAmount($areaId, $weight, $cartAmount = 0)
     {
@@ -371,30 +369,10 @@ class MondialRelayPickupPoint extends AbstractDeliveryModule
             }
         }
 
-        return $minPostage === null ? $minPostage : $this->buildOrderPostage($minPostage, $country, $locale);
+        return $minPostage === null ? $minPostage : $this->buildOrderPostage($minPostage, $country, $locale, self::getConfigValue(self::MONDIAL_RELAY_PICKUP_POINT_TAX_RULE_ID));
     }
 
-    public function buildOrderPostage($postage, $country, $locale, $taxRuleId = null)
-    {
-        $taxRuleQuery = TaxRuleQuery::create();
-        $taxRuleId = ($taxRuleId) ?: ConfigQuery::read('taxrule_id_delivery_module');
-        if ($taxRuleId) {
-            $taxRuleQuery->filterById($taxRuleId);
-        }
-        $taxRule = $taxRuleQuery->orderByIsDefault(Criteria::DESC)->findOne();
-
-        $orderPostage = new OrderPostage();
-        $taxCalculator = new Calculator();
-        $taxCalculator->loadTaxRuleWithoutProduct($taxRule, $country);
-
-        $orderPostage->setAmount((float)$postage);
-        $orderPostage->setAmountTax($taxCalculator->getTaxAmountFromTaxedPrice($postage));
-        $orderPostage->setTaxRuleTitle($taxRule->setLocale($locale)->getTitle());
-
-        return $orderPostage;
-    }
-
-    public function getDeliveryMode()
+    public function getDeliveryMode(): string
     {
         return "pickup";
     }

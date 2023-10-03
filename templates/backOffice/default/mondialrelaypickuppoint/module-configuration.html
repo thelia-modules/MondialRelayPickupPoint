@@ -9,6 +9,7 @@
     <ul class="nav nav-tabs clearfix">
         <li {if $current_tab|default:null == 'general'}class="active"{/if}><a href="#general" data-tab-name="general" data-toggle="tab">{intl l="Configuration" d='mondialrelaypickuppoint.bo.default'}</a></li>
         <li {if $current_tab|default:null == 'prices'}class="active"{/if}><a href="#prices" data-tab-name="prices" data-toggle="tab">{intl l="Prices" d='mondialrelaypickuppoint.bo.default'}</a></li>
+        <li {if $current_tab|default:null == 'tax_rule'}class="active"{/if}><a href="#tax_rule" data-tab-name="tax_rule" data-toggle="tab">{intl l="Tax Rules" d='mondialrelaypickuppoint.bo.default'}</a></li>
         {*
         <li {if $current_tab == 'insurances'}class="active"{/if}><a href="#insurances" data-tab-name="insurances" data-toggle="tab">{intl l="Insurances" d='mondialrelaypickuppoint.bo.default'}</a></li>
         *}
@@ -58,6 +59,25 @@
             <div class="form-container" id="prices-form-container">
                 {include file="mondialrelaypickuppoint/ajax/prices.html" module_id=$module_id}
             </div>
+        </div>
+
+        <div class="tab-pane fade {if $current_tab == 'tax_rule'}active in{/if}" id="tax_rule">
+            <br>
+            <div class="title">
+                {intl l="Mondial Relay Pickup Delivery Tax Rule Configuration" d='mondialrelaypickuppoint.bo.default'}
+            </div>
+
+            {form name="mondialrelaypickuppoint_form_tax_rule_form"}
+                <form action="{url path="/admin/module/MondialRelayPickupPoint/tax_rule/save"}" method="post" >
+                    {form_hidden_fields}
+
+                    {render_form_field field='tax_rule_id'}
+
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" type="submit">{intl l="Save"}</button>
+                    </span>
+                </form>
+            {/form}
         </div>
         
         {*
