@@ -51,7 +51,7 @@ class AdminHookManager extends BaseHook
     public function onModuleConfigureJs(HookRenderEvent $event)
     {
         $event
-            ->add($this->render("mondialrelaypickuppoint/assets/js/mondialrelaypickuppoint.js.html"))
+            ->add($this->render("mondialrelaypickuppoint/assets/js/mondialrelay.js.html"))
             ->add($this->addJS("mondialrelaypickuppoint/assets/js/bootstrap-notify.min.js"))
         ;
     }
