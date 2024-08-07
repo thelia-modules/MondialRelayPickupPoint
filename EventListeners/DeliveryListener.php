@@ -172,13 +172,21 @@ class DeliveryListener extends BaseAction implements EventSubscriberInterface
                     strtoupper($country->getIsoalpha2()),
                     $event->getZipcode(),
                     "",
-                    $cartWeightInGrammes
+                    $cartWeightInGrammes,
+                    "",
+                    "",
+                    "",
+                    $event->getNumPointRelais()
                 );
 
                 $points = [];
 
                 $pointFactory = new PointFactory();
                 $this->checkResponse('WSI3_PointRelais_Recherche', $result);
+
+                if (!empty($event->getNumPointRelais())){
+                    $points[] = $pointFactory->create((object)$result['WSI3_PointRelais_RechercheResult']['PointsRelais']['PointRelais_Details']);
+                }
 
                 foreach ($result['WSI3_PointRelais_RechercheResult']['PointsRelais']['PointRelais_Details'] as $destination_point) {
                     foreach ($destination_point as $key => $value) {

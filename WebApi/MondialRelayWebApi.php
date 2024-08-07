@@ -98,7 +98,7 @@ class MondialRelayWebApi
      * @access   public
      * @return   array
      */
-    public function SearchParcelShop($CountryCode, $PostCode, $DeliveryMode = "", $ParcelWeight = "", $ParcelShopActivityCode = "", $SearchDistance = "", $SearchOpenningDelay = "")
+    public function SearchParcelShop($CountryCode, $PostCode, $DeliveryMode = "", $ParcelWeight = "", $ParcelShopActivityCode = "", $SearchDistance = "", $SearchOpenningDelay = "", $numPointRelais = "")
     {
         $endPoint =  MondialRelayPickupPoint::getConfigValue(MondialRelayPickupPoint::WEBSERVICE_URL) ?? $this->_APIEndPointUrlV1 . $this->_APIFileEndPointV1;
 
@@ -115,7 +115,8 @@ class MondialRelayWebApi
             'Action' => $DeliveryMode,
             'RayonRecherche' => $SearchDistance,
             'TypeActivite' => $ParcelShopActivityCode,
-            'DelaiEnvoi' => $SearchOpenningDelay
+            'DelaiEnvoi' => $SearchOpenningDelay,
+            'NumPointRelais' => $numPointRelais
         ];
 
         return $this->CallWebApi("WSI3_PointRelais_Recherche", $this->AddSecurityCode($params));

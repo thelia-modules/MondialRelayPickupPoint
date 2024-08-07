@@ -1,47 +1,11 @@
 <script type="text/html" id="mondialrelay_ui">
     <td colspan="3">
         <input type="hidden" name="mondial-relay-selected-delivery-mode" value="none">
-        
-        {$withHome = false}
-        {loop type="mondialrelaypickuppoint.delivery-price" name="home-prices" mode="home" country_id=$country state_id=$state}
-            {$withHome = true}
-            <div class="row">
-                <div class="col-sm-4">
-                    <label for="mondialrelay_home">
-                        {form name="thelia.order.delivery"}
-                            {form_field field='delivery-module'}
-                            <label for="delivery-method_{$module_id}_home">
-                                <input type="radio" data-mondial-relay-delivery-mode="home" name="{$name}" id="delivery-method_{$module_id}_home" value="{$module_id}">
-                                <strong>{intl d="mondialrelaypickuppoint.fo.default" l="Mondial Relay home delivery"}</strong>
-                                <br>
-                                <span class="help-block">
-                                    {intl l="Expected delivery date: %delivery_date" delivery_date={format_date date=$DELIVERY_DATE output="date"} d="mondialrelaypickuppoint.fo.default" }
-                                </span>
-                            </label>
-                            {/form_field}
-                        {/form}
-                    </label>
-                </div>
-    
-                <div class="col-sm-4 hidden-xs text-center">
-                    {loop type="image" name="deliveryspicture" source="module" source_id=$module_id force_return="true" width="100" height="72"}
-                        <img src="{$IMAGE_URL nofilter}" alt="{$TITLE}">
-                    {/loop}
-                </div>
-    
-                <div class="col-sm-4">
-                    <div class="price text-right">
-                        {format_money number=$PRICE symbol={currency attr='symbol'}}
-                    </div>
-                </div>
-            </div>
-        {/loop}
     
         {$withRelay = false}
         
         {loop type="mondialrelaypickuppoint.delivery-price" name="relay-prices" mode="relay" country_id=$country state_id=$state}
-            <div {if $withHome}class="pickup-home-separator"{/if}></div>
-            
+
             {$withRelay = true}
             <div class="row">
                 <div class="col-sm-4">
@@ -248,7 +212,7 @@
         
                         html += '</td>';
         
-                        html += '<td><input type="radio" name="mondialrelay_relay" value="' + item.id + '"></td>';
+                        html += '<td><input type="radio" name="MondialRelayPickupPoint_relay" value="' + item.id + '"></td>';
         
                         html += '</tr>';
                     }
@@ -322,7 +286,7 @@
         $("#form-cart-delivery").off('submit').submit(function(ev) {
             if ($('[data-mondial-relay-delivery-mode=pickup]').is(':checked')
                 &&
-                $('input[name=mondialrelay_relay]:checked').length === 0) {
+                $('input[name=MondialRelayPickupPoint_relay]:checked').length === 0) {
                 alert("{intl d="mondialrelaypickuppoint.fo.default" l="Please select a pickup location." js=1}");
                 ev.preventDefault();
             }

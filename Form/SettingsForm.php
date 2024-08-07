@@ -66,7 +66,20 @@ class SettingsForm extends BaseForm
                         'help' => $this->translator->trans('This is the URL of the Mondial Relay web service WSDL.', [], MondialRelayPickupPoint::DOMAIN_NAME)
                     ]
                 ]
+            )->add(
+                MondialRelayPickupPoint::GOOGLE_MAPS_API_KEY,
+                TextType::class,
+                [
+                    'required' => false,
+                    'label' => $this->translator->trans('Google Map API Key', [], MondialRelayPickupPoint::DOMAIN_NAME),
+                    'label_attr' => [
+                        'help' => $this->translator->trans(
+                            'This key is required to display relays map. <a href="%get_key_url">Click here</a> to get one.',
+                            [ "%get_key_url" => "https://developers.google.com/maps/documentation/javascript/get-api-key" ],
+                            MondialRelayPickupPoint::DOMAIN_NAME
+                        )
+                    ]
+                ]
             );
-
     }
 }
