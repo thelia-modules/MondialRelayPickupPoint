@@ -49,13 +49,8 @@ class ConfigurationController extends BaseAdminController
             $form->setErrorMessage($errorMessage);
             $parserContext->addForm($form);
             $parserContext->setGeneralError($errorMessage);
-
-            return $this->render(
-                "module-configure",
-                ["module_code" => MondialRelayPickupPoint::getModuleCode()]
-            );
         }
 
-        return $this->generateRedirect(URL::getInstance()->absoluteUrl('/admin/module/MondialRelayPickupPoint'));
+        return $this->render('mondialrelaypickuppoint/ajax/general', [ 'error_message' => $errorMessage ]);
     }
 }
