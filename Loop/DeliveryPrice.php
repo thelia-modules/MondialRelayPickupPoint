@@ -154,10 +154,10 @@ class DeliveryPrice extends BaseLoop implements ArraySearchLoopInterface
     public function parseResults(LoopResult $loopResult)
     {
         /** @var MondialRelayPickupPointPrice $item */
-        foreach ($loopResult->getResultDataCollection() as $resultItem) {
+        foreach ($loopResult->getResultDataCollection() as $item) {
             $loopResultRow = new LoopResultRow($item);
 
-            foreach ($resultItem as $name => $value) {
+            foreach ($item as $name => $value) {
                 $loopResultRow->set($name, $value);
             }
 
