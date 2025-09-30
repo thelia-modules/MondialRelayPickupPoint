@@ -47,7 +47,7 @@ class PriceController extends BaseAdminController
                 (new MondialRelayPickupPointPrice())
                     ->setAreaId($areaId)
                     ->setMaxWeight($value)
-                    ->setPriceWithTax($data['price'][$key])
+                    ->setPriceWithoutTax($data['price'][$key])
                     ->save();
             }
 
@@ -87,7 +87,7 @@ class PriceController extends BaseAdminController
 
             (new MondialRelayPickupPointPrice())
                 ->setAreaId($areaId)
-                ->setPriceWithTax($data['price'])
+                ->setPriceWithoutTax($data['price'])
                 ->setMaxWeight($data['max_weight'])
                 ->save();
         } catch (\Exception $ex) {

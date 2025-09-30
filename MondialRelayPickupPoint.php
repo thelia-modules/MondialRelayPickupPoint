@@ -125,7 +125,7 @@ class MondialRelayPickupPoint extends AbstractDeliveryModuleWithState
                     (new MondialRelayPickupPointPrice())
                         ->setAreaId($area->getId())
                         ->setMaxWeight($price->up_to)
-                        ->setPriceWithTax($price->price_euro * $rateFromEuro)
+                        ->setPriceWithoutTax($price->price_euro * $rateFromEuro)
                         ->save();
                 }
             }
@@ -323,22 +323,15 @@ class MondialRelayPickupPoint extends AbstractDeliveryModuleWithState
             }
 
             /** Search the list of prices and order it in ascending order */
-            $areaPrices = MondialRelayPickupPointPriceQuery::create()
+            if (null === $areaPrice = MondialRelayPickupPointPriceQuery::create()
                 ->filterByAreaId($areaId)
-                ->filterByMaxWeight($weight, Criteria::GREATER_THAN)
+                ->filterByMaxWeight($weight, Criteria::GREATER_EQUAL)
                 ->orderByMaxWeight(Criteria::ASC)
-            ;
-
-            /** Find the correct postage price for the cart weight and price according to the area and delivery mode in $areaPrices*/
-            $firstPrice = $areaPrices->find()
-                ->getFirst();
-
-            if (null === $firstPrice) {
+                ->findOne()) {
                 return null;
-                //throw new DeliveryException("MondialRelay delivery unavailable for your cart weight or delivery country");
             }
 
-            $postage = $firstPrice->getPriceWithTax();
+            $postage = $areaPrice->getPriceWithoutTax();
         }
         return $postage;
     }

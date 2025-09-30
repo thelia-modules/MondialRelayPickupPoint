@@ -45,7 +45,7 @@ class InsuranceController extends BaseAdminController
                 if (null !== $insurance = MondialRelayPickupPointInsuranceQuery::create()->findPk($key)) {
                     $insurance
                         ->setMaxValue($value)
-                        ->setPriceWithTax($data['price_with_tax'][$key])
+                        ->setPriceWithoutTax($data['price_without_tax'][$key])
                         ->save();
                 }
             }
@@ -84,7 +84,7 @@ class InsuranceController extends BaseAdminController
             MondialRelayPickupPointInsuranceQuery::create()->filterByMaxValue($data['max_value'])->delete();
 
             (new MondialRelayPickupPointInsurance())
-                ->setPriceWithTax($data['price_with_tax'])
+                ->setPriceWithoutTax($data['price_without_tax'])
                 ->setMaxValue($data['max_value'])
                 ->save();
         } catch (\Exception $ex) {

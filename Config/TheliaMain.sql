@@ -27,7 +27,7 @@ CREATE TABLE `mondial_relay_pickup_point_price`
 (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `max_weight` DECIMAL(16,6) DEFAULT 0.000000 NOT NULL,
-    `price_with_tax` DECIMAL(16,6) DEFAULT 0.000000 NOT NULL,
+    `price_without_tax` DECIMAL(16,6) DEFAULT 0.000000 NOT NULL,
     `area_id` INTEGER NOT NULL,
     PRIMARY KEY (`id`),
     INDEX `fi_mondial_relay_pickup_point_price_area_id` (`area_id`),
@@ -49,7 +49,7 @@ CREATE TABLE `mondial_relay_pickup_point_insurance`
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `level` INTEGER NOT NULL,
     `max_value` DECIMAL(16,6) DEFAULT 0.000000 NOT NULL,
-    `price_with_tax` DECIMAL(16,6) DEFAULT 0.000000 NOT NULL,
+    `price_without_tax` DECIMAL(16,6) DEFAULT 0.000000 NOT NULL,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;
 

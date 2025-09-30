@@ -53,7 +53,7 @@ class Insurances extends BaseLoop implements PropelSearchLoopInterface
             $loopResultRow
                 ->set('ID', $item->getId())
                 ->set('MAX_VALUE', $item->getMaxValue())
-                ->set('PRICE', $item->getPriceWithTax())
+                ->set('PRICE', $item->getPriceWithoutTax())
                 ;
 
             $loopResult->addRow($loopResultRow);

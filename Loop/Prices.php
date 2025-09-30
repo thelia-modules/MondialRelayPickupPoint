@@ -61,7 +61,7 @@ class Prices extends BaseLoop implements PropelSearchLoopInterface
             $loopResultRow
                 ->set('ID', $item->getId())
                 ->set('MAX_WEIGHT', $item->getMaxWeight())
-                ->set('PRICE', $item->getPriceWithTax())
+                ->set('PRICE', $item->getPriceWithoutTax())
                 ->set('AREA_ID', $item->getAreaId())
                 ;
 

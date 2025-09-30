@@ -36,7 +36,7 @@ class InsurancesUpdateForm extends BaseForm
                     'allow_delete' => true,
                 ]
             )->add(
-                'price_with_tax',
+                'price_without_tax',
                 CollectionType::class,
                 [
                     "entry_type" => NumberType::class,

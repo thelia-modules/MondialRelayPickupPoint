@@ -2,13 +2,13 @@
 
 {ifloop rel="module-areas"}
     <p>&nbsp;</p>
-    
+
     {loop type="area" name="module-areas" module_id=$module_id order='id'}
     <div class="panel panel-info">
         <div class="panel-heading text-uppercase">
             {intl l="Shipping zone \"%name\"" name=$NAME d='mondialrelaypickuppoint.bo.default'}
         </div>
-    
+
         <div class="panel-body">
             <div class="row">
                 <div class="col-sm-8">
@@ -26,7 +26,7 @@
                                     <thead>
                                     <tr>
                                         <th>{intl l='Cart weight up to...' d='mondialrelaypickuppoint.bo.default'}</th>
-                                        <th>{intl l='Price with tax' d='mondialrelaypickuppoint.bo.default'}</th>
+                                        <th>{intl l='Price without tax' d='mondialrelaypickuppoint.bo.default'}</th>
                                         <th>&nbsp;</th>
                                     </tr>
                                     </thead>

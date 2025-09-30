@@ -31,7 +31,7 @@ class InsuranceCreateForm extends BaseForm
                     'label' => $this->translator->trans('Cart value', [], MondialRelayPickupPoint::DOMAIN_NAME),
                 ]
             )->add(
-                'price_with_tax',
+                'price_without_tax',
                 NumberType::class,
                 [
                     "constraints" => [new GreaterThanOrEqual([ 'value' => 0 ])],

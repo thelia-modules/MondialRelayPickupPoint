@@ -16,6 +16,7 @@ use MondialRelayPickupPoint\Model\MondialRelayPickupPointPriceQuery;
 use MondialRelayPickupPoint\Model\MondialRelayPickupPointZoneConfigurationQuery;
 use MondialRelayPickupPoint\MondialRelayPickupPoint;
 use Propel\Runtime\ActiveQuery\Criteria;
+use Propel\Runtime\Exception\PropelException;
 use Thelia\Core\Template\Element\ArraySearchLoopInterface;
 use Thelia\Core\Template\Element\BaseLoop;
 use Thelia\Core\Template\Element\LoopResult;
@@ -24,11 +25,15 @@ use Thelia\Core\Template\Loop\Argument\Argument;
 use Thelia\Core\Template\Loop\Argument\ArgumentCollection;
 use Thelia\Model\AreaDeliveryModuleQuery;
 use Thelia\Model\Cart;
+use Thelia\Model\ConfigQuery;
+use Thelia\Model\Country;
 use Thelia\Model\CountryArea;
 use Thelia\Model\CountryAreaQuery;
 use Thelia\Model\CountryQuery;
 use Thelia\Model\ModuleQuery;
 use Thelia\Model\StateQuery;
+use Thelia\Model\TaxRuleQuery;
+use Thelia\TaxEngine\Calculator;
 use Thelia\Type\EnumType;
 use Thelia\Type\TypeCollection;
 
@@ -105,7 +110,7 @@ class DeliveryPrice extends BaseLoop implements ArraySearchLoopInterface
             /** @var Cart $cart */
             $cart = $this->requestStack
                 ->getCurrentRequest()
-                ->getSession()
+                ?->getSession()
                 ->getSessionCart($this->dispatcher)
                 ;
 
@@ -124,7 +129,8 @@ class DeliveryPrice extends BaseLoop implements ArraySearchLoopInterface
                     $deliveryDate = (new \DateTime())->add(new \DateInterval("P" . $zone->getDeliveryTime() . "D"));
 
                     // We have a price
-                    $result['PRICE'] = $deliveryPrice->getPriceWithTax();
+                    $result['PRICE_WITHOUT_TAX'] = $deliveryPrice->getPriceWithoutTax();
+                    $result['PRICE'] = $this->getTaxedPrice($deliveryPrice->getPriceWithoutTax(), $country);
                     $result['MAX_WEIGHT'] = $deliveryPrice->getMaxWeight();
                     $result['AREA_ID'] = $deliveryPrice->getAreaId();
                     $result['DELIVERY_DELAY'] = $zone->getDeliveryTime();
@@ -137,7 +143,8 @@ class DeliveryPrice extends BaseLoop implements ArraySearchLoopInterface
                         ->findOne()
                     ) {
                         $result['INSURANCE_AVAILABLE'] = true;
-                        $result['INSURANCE_PRICE'] = $insurance->getPriceWithTax();
+                        $result['INSURANCE_PRICE_WITHOUT_TAX'] = $insurance->getPriceWithoutTax();
+                        $result['INSURANCE_PRICE'] = $this->getTaxedPrice($insurance->getPriceWithoutTax(), $country);
                         $result['INSURANCE_REF_VALUE'] = $insurance->getMaxValue();
                     } else {
                         $result['INSURANCE_AVAILABLE'] = false;
@@ -165,5 +172,25 @@ class DeliveryPrice extends BaseLoop implements ArraySearchLoopInterface
         }
 
         return $loopResult;
+    }
+
+    /**
+     * @throws PropelException
+     */
+    protected function getTaxedPrice(float $untaxedPrice, Country $country): float
+    {
+        $taxRuleQuery = TaxRuleQuery::create();
+
+        if ($taxRuleId = MondialRelayPickupPoint::getConfigValue(
+            MondialRelayPickupPoint::MONDIAL_RELAY_PICKUP_POINT_TAX_RULE_ID
+        ) ?: ConfigQuery::read('taxrule_id_delivery_module')) {
+            $taxRuleQuery->filterById($taxRuleId);
+        }
+
+        return
+            (new Calculator())
+            ->loadTaxRuleWithoutProduct($taxRuleQuery->orderByIsDefault(Criteria::DESC)->findOne(), $country)
+            ->getTaxedPrice($untaxedPrice)
+            ;
     }
 }
