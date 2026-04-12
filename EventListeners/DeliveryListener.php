@@ -291,7 +291,7 @@ class DeliveryListener extends BaseAction implements EventSubscriberInterface
         $session->remove(MondialRelayPickupPoint::SESSION_SELECTED_PICKUP_RELAY_ID);
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return [
             TheliaEvents::ORDER_SET_DELIVERY_MODULE => ['updateCurrentDeliveryAddress', 64],

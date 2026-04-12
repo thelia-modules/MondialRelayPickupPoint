@@ -4,7 +4,7 @@ namespace MondialRelayPickupPoint\Controller\BackOffice;
 
 use MondialRelayPickupPoint\Form\TaxRuleForm;
 use MondialRelayPickupPoint\MondialRelayPickupPoint;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Thelia\Controller\Admin\BaseAdminController;
 use Thelia\Core\Security\AccessManager;
 use Thelia\Core\Security\Resource\AdminResources;

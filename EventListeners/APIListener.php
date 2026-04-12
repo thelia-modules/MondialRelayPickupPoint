@@ -212,7 +212,7 @@ class APIListener implements EventSubscriberInterface
         return $pickupLocationAddress;
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         $listenedEvents = [];
 
