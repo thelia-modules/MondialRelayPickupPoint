@@ -82,4 +82,9 @@ class SettingsForm extends BaseForm
                 ]
             );
     }
+
+    public static function getName(): string
+    {
+        return "mondialrelaypickuppoint_settings_form";
+    }
 }

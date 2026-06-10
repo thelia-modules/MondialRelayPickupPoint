@@ -16,14 +16,32 @@ use Thelia\Core\Hook\BaseHook;
 
 class FrontHookManager extends BaseHook
 {
+    public static function getSubscribedHooks(): array
+    {
+        return [
+            'order-delivery.extra' => [
+                ['type' => 'front', 'method' => 'onOrderDeliveryExtra'],
+            ],
+            'order-delivery.stylesheet' => [
+                ['type' => 'front', 'method' => 'onOrderDeliveryStylesheet'],
+            ],
+            'order-invoice.delivery-address' => [
+                ['type' => 'front', 'method' => 'onOrderInvoiceDeliveryAddress'],
+            ],
+            'account-order.delivery-address' => [
+                ['type' => 'front', 'method' => 'onAccountOrderDeliveryAddress'],
+            ],
+        ];
+    }
+
     public function onOrderDeliveryExtra(HookRenderEvent $event)
     {
         // Clear the session context
         $this->getSession()->remove(MondialRelayPickupPoint::SESSION_SELECTED_DELIVERY_TYPE);
         $this->getSession()->remove(MondialRelayPickupPoint::SESSION_SELECTED_PICKUP_RELAY_ID);
 
-        // Get the address id from the request, as the hook don(t give it to us.
-        $addressId = $this->getRequest()->get('address_id', 0);
+        // Get the address id from the request, as the hook don't give it to us.
+        $addressId = $this->getRequest()?->query->get('address_id', 0);
 
         $event->add(
             $this->render(
@@ -34,6 +52,16 @@ class FrontHookManager extends BaseHook
                 ]
             )
         );
+    }
+
+    public function onOrderDeliveryStylesheet(HookRenderEvent $event)
+    {
+        $event->add($this->addCSS('mondialrelaypickuppoint/assets/css/styles.css'));
+    }
+
+    public function onOrderInvoiceDeliveryAddress(HookRenderEvent $event)
+    {
+        $event->add($this->render('mondialrelaypickuppoint/delivery-address.html'));
     }
 
     public function onAccountOrderDeliveryAddress(HookRenderEvent $event)

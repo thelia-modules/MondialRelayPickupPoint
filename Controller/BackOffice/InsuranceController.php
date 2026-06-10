@@ -14,6 +14,8 @@ namespace MondialRelayPickupPoint\Controller\BackOffice;
 use MondialRelayPickupPoint\Model\MondialRelayPickupPointInsurance;
 use MondialRelayPickupPoint\Model\MondialRelayPickupPointInsuranceQuery;
 use MondialRelayPickupPoint\MondialRelayPickupPoint;
+use MondialRelayPickupPoint\Form\InsurancesUpdateForm;
+use MondialRelayPickupPoint\Form\InsuranceCreateForm;
 use Thelia\Controller\Admin\BaseAdminController;
 use Thelia\Core\Security\AccessManager;
 use Thelia\Core\Security\Resource\AdminResources;
@@ -32,7 +34,7 @@ class InsuranceController extends BaseAdminController
             return $response;
         }
 
-        $form = $this->createForm('mondialrelaypickuppoint.insurances_update_form');
+        $form = $this->createForm(InsurancesUpdateForm::getName());
 
         $errorMessage = false;
 
@@ -57,10 +59,7 @@ class InsuranceController extends BaseAdminController
             $parserContext->addForm($form);
             $parserContext->setGeneralError($errorMessage);
 
-            return $this->render(
-                "module-configure",
-                ["module_code" => MondialRelayPickupPoint::getModuleCode()]
-            );
+            return $this->generateRedirect(URL::getInstance()->absoluteUrl('/admin/module/MondialRelayPickupPoint'));
         }
 
         return $this->generateRedirect(URL::getInstance()->absoluteUrl('/admin/module/MondialRelayPickupPoint'));
@@ -72,7 +71,7 @@ class InsuranceController extends BaseAdminController
             return $response;
         }
 
-        $form = $this->createForm('mondialrelaypickuppoint.insurance_create_form');
+        $form = $this->createForm(InsuranceCreateForm::getName());
 
         $errorMessage = false;
 
@@ -95,10 +94,7 @@ class InsuranceController extends BaseAdminController
             $parserContext->addForm($form);
             $parserContext->setGeneralError($errorMessage);
 
-            return $this->render(
-                "module-configure",
-                ["module_code" => MondialRelayPickupPoint::getModuleCode()]
-            );
+            return $this->generateRedirect(URL::getInstance()->absoluteUrl('/admin/module/MondialRelayPickupPoint'));
         }
 
         return $this->generateRedirect(URL::getInstance()->absoluteUrl('/admin/module/MondialRelayPickupPoint'));

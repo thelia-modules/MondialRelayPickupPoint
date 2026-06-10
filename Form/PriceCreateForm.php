@@ -40,4 +40,9 @@ class PriceCreateForm extends BaseForm
             )
         ;
     }
+
+    public static function getName(): string
+    {
+        return "mondialrelaypickuppoint_price_form";
+    }
 }

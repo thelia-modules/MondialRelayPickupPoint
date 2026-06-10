@@ -11,6 +11,7 @@
 namespace MondialRelayPickupPoint\Controller\BackOffice;
 
 use MondialRelayPickupPoint\MondialRelayPickupPoint;
+use MondialRelayPickupPoint\Form\SettingsForm;
 use Thelia\Controller\Admin\BaseAdminController;
 use Thelia\Core\Security\AccessManager;
 use Thelia\Core\Security\Resource\AdminResources;
@@ -29,7 +30,7 @@ class ConfigurationController extends BaseAdminController
             return $response;
         }
 
-        $form = $this->createForm('mondialrelaypickuppoint.settings_form');
+        $form = $this->createForm(SettingsForm::getName());
 
         $errorMessage = false;
 
@@ -51,6 +52,6 @@ class ConfigurationController extends BaseAdminController
             $parserContext->setGeneralError($errorMessage);
         }
 
-        return $this->render('mondialrelaypickuppoint/ajax/general', [ 'error_message' => $errorMessage ]);
+        return $this->generateRedirect(URL::getInstance()->absoluteUrl('/admin/module/MondialRelayPickupPoint'));
     }
 }

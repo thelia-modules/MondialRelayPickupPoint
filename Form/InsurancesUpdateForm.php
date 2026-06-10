@@ -49,4 +49,9 @@ class InsurancesUpdateForm extends BaseForm
             )
         ;
     }
+
+    public static function getName(): string
+    {
+        return "mondialrelaypickuppoint_insurances_update_form";
+    }
 }

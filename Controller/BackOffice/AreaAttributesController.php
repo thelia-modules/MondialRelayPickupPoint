@@ -14,6 +14,7 @@ namespace MondialRelayPickupPoint\Controller\BackOffice;
 use MondialRelayPickupPoint\Model\MondialRelayPickupPointZoneConfiguration;
 use MondialRelayPickupPoint\Model\MondialRelayPickupPointZoneConfigurationQuery;
 use MondialRelayPickupPoint\MondialRelayPickupPoint;
+use MondialRelayPickupPoint\Form\PriceAttributesUpdateForm;
 use Thelia\Controller\Admin\BaseAdminController;
 use Thelia\Core\Security\AccessManager;
 use Thelia\Core\Security\Resource\AdminResources;
@@ -32,7 +33,7 @@ class AreaAttributesController extends BaseAdminController
             return $response;
         }
 
-        $form = $this->createForm('mondialrelaypickuppoint.area_attributes_update_form');
+        $form = $this->createForm(PriceAttributesUpdateForm::getName());
 
         $errorMessage = false;
 
@@ -58,10 +59,7 @@ class AreaAttributesController extends BaseAdminController
             $parserContext->addForm($form);
             $parserContext->setGeneralError($errorMessage);
 
-            return $this->render(
-                "module-configure",
-                ["module_code" => MondialRelayPickupPoint::getModuleCode()]
-            );
+            return $this->generateRedirect(URL::getInstance()->absoluteUrl('/admin/module/MondialRelayPickupPoint'));
         }
 
         return $this->generateRedirect(URL::getInstance()->absoluteUrl('/admin/module/MondialRelayPickupPoint'));

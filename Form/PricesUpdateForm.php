@@ -47,4 +47,9 @@ class PricesUpdateForm extends BaseForm
             )
         ;
     }
+
+    public static function getName(): string
+    {
+        return "mondialrelaypickuppoint_prices_update_form";
+    }
 }

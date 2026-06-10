@@ -16,7 +16,7 @@ use Symfony\Component\DependencyInjection\Loader\Configurator\ServicesConfigurat
 use Symfony\Component\Finder\Finder;
 use Thelia\Core\Translation\Translator;
 use Thelia\Exception\TheliaProcessException;
-use Thelia\Install\Database;
+use Thelia\Core\Install\Database;
 use Thelia\Model\Area;
 use Thelia\Model\AreaDeliveryModule;
 use Thelia\Model\AreaQuery;
@@ -175,7 +175,7 @@ class MondialRelayPickupPoint extends AbstractDeliveryModuleWithState
     public static function configureServices(ServicesConfigurator $servicesConfigurator): void
     {
         $servicesConfigurator->load(self::getModuleCode().'\\', __DIR__)
-            ->exclude([THELIA_MODULE_DIR . ucfirst(self::getModuleCode()). "/I18n/*"])
+            ->exclude([__DIR__ . '/I18n/*'])
             ->autowire(true)
             ->autoconfigure(true);
     }

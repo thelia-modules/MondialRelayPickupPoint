@@ -15,6 +15,36 @@ use Thelia\Core\Hook\BaseHook;
 
 class EmailHookManager extends BaseHook
 {
+    public static function getSubscribedHooks(): array
+    {
+        return [
+            'email-html.order-confirmation.delivery-address' => [
+                ['type' => 'email', 'method' => 'onDeliveryAddressHtml'],
+            ],
+            'email-txt.order-confirmation.delivery-address' => [
+                ['type' => 'email', 'method' => 'onDeliveryAddressText'],
+            ],
+            'email-html.order-notification.delivery-address' => [
+                ['type' => 'email', 'method' => 'onDeliveryAddressHtml'],
+            ],
+            'email-txt.order-notification.delivery-address' => [
+                ['type' => 'email', 'method' => 'onDeliveryAddressText'],
+            ],
+            'email-html.order-confirmation.after-products' => [
+                ['type' => 'email', 'method' => 'onAfterProductsHtml'],
+            ],
+            'email-txt.order-confirmation.after-products' => [
+                ['type' => 'email', 'method' => 'onAfterProductsText'],
+            ],
+            'email-html.order-notification.after-products' => [
+                ['type' => 'email', 'method' => 'onAfterProductsHtml'],
+            ],
+            'email-txt.order-notification.after-products' => [
+                ['type' => 'email', 'method' => 'onAfterProductsText'],
+            ],
+        ];
+    }
+
     protected function renderAddressTemplate(HookRenderEvent $event, $htmlMode = false)
     {
         $event->add(

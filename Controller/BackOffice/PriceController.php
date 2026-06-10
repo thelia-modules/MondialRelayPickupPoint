@@ -14,6 +14,8 @@ namespace MondialRelayPickupPoint\Controller\BackOffice;
 use MondialRelayPickupPoint\Model\MondialRelayPickupPointPrice;
 use MondialRelayPickupPoint\Model\MondialRelayPickupPointPriceQuery;
 use MondialRelayPickupPoint\MondialRelayPickupPoint;
+use MondialRelayPickupPoint\Form\PricesUpdateForm;
+use MondialRelayPickupPoint\Form\PriceCreateForm;
 use Thelia\Controller\Admin\BaseAdminController;
 use Thelia\Core\Security\AccessManager;
 use Thelia\Core\Security\Resource\AdminResources;
@@ -32,7 +34,7 @@ class PriceController extends BaseAdminController
             return $response;
         }
 
-        $form = $this->createForm('mondialrelaypickuppoint.prices_update_form');
+        $form = $this->createForm(PricesUpdateForm::getName());
 
         $errorMessage = false;
 
@@ -59,10 +61,7 @@ class PriceController extends BaseAdminController
             $parserContext->addForm($form);
             $parserContext->setGeneralError($errorMessage);
 
-            return $this->render(
-                "module-configure",
-                ["module_code" => MondialRelayPickupPoint::getModuleCode()]
-            );
+            return $this->generateRedirect(URL::getInstance()->absoluteUrl('/admin/module/MondialRelayPickupPoint'));
         }
 
         return $this->generateRedirect(URL::getInstance()->absoluteUrl('/admin/module/MondialRelayPickupPoint'));
@@ -74,7 +73,7 @@ class PriceController extends BaseAdminController
             return $response;
         }
 
-        $form = $this->createForm('mondialrelaypickuppoint.price_form');
+        $form = $this->createForm(PriceCreateForm::getName());
 
         $errorMessage = false;
 
@@ -98,10 +97,7 @@ class PriceController extends BaseAdminController
             $parserContext->addForm($form);
             $parserContext->setGeneralError($errorMessage);
 
-            return $this->render(
-                "module-configure",
-                ["module_code" => MondialRelayPickupPoint::getModuleCode()]
-            );
+            return $this->generateRedirect(URL::getInstance()->absoluteUrl('/admin/module/MondialRelayPickupPoint'));
         }
 
         return $this->generateRedirect(URL::getInstance()->absoluteUrl('/admin/module/MondialRelayPickupPoint'));

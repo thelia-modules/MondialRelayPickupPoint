@@ -1,0 +1,244 @@
+{# Mondial Relay pickup point — module configuration (hook fragment, default-twig BO) #}
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title h5 mb-0">
+            {{ 'Mondial Relay delivery configuration'|trans({}, 'mondialrelaypickuppoint.bo.default') }}
+        </h2>
+    </div>
+    <div class="card-body">
+        <ul class="nav nav-tabs mb-3" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#mr-general" type="button" role="tab">
+                    {{ 'Configuration'|trans({}, 'mondialrelaypickuppoint.bo.default') }}
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#mr-prices" type="button" role="tab">
+                    {{ 'Prices'|trans({}, 'mondialrelaypickuppoint.bo.default') }}
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#mr-tax-rule" type="button" role="tab">
+                    {{ 'Tax Rules'|trans({}, 'mondialrelaypickuppoint.bo.default') }}
+                </button>
+            </li>
+        </ul>
+
+        <div class="tab-content">
+            {# ===================== GENERAL ===================== #}
+            <div class="tab-pane fade show active" id="mr-general" role="tabpanel">
+                <form action="{{ path('mondial_relay_pickup_point.settings.save') }}" method="post">
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{ form_row(settings_form.code_enseigne) }}
+                            {{ form_row(settings_form.private_key) }}
+                            {{ form_row(settings_form.webservice_url) }}
+                            {{ form_row(settings_form.google_maps_api_key) }}
+                            {{ form_row(settings_form.allow_insurance) }}
+                        </div>
+                        <div class="col-md-6 text-center" style="margin-top: 40px; padding: 0 10%;">
+                            <p>
+                                <a href="https://www.younivers.fr">
+                                    <img class="img-fluid" src="/modules/MondialRelayPickupPoint/templates/backOffice/default/mondialrelaypickuppoint/assets/img/younivers.png" alt="you'Nivers">
+                                </a>
+                            </p>
+                            <p>
+                                {{ 'Development of this module is sponsored by'|trans({}, 'mondialrelaypickuppoint.bo.default') }}
+                                <a href="https://www.younivers.fr">you'Nivers</a>
+                                {{ 'web and communication agency in Roanne.'|trans({}, 'mondialrelaypickuppoint.bo.default') }}
+                            </p>
+                        </div>
+                    </div>
+                    <input type="hidden" name="{{ settings_form.vars.full_name }}[_token]" value="{{ settings_form._token.vars.value }}">
+                    <div class="text-end">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save"></i> {{ 'Save'|trans }}
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            {# ===================== PRICES ===================== #}
+            <div class="tab-pane fade" id="mr-prices" role="tabpanel">
+                {# Total free shipping toggle #}
+                <form action="{{ path('mondial_relay_pickup_point.toggle.freeshipping') }}" method="post" class="card mb-3">
+                    <div class="card-body row align-items-end">
+                        <div class="col-md-4">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox"
+                                       name="{{ freeshipping_form.vars.full_name }}[freeshipping]" value="1"
+                                       id="mr-freeshipping" {{ free_shipping_active ? 'checked' : '' }}>
+                                <label class="form-check-label" for="mr-freeshipping">
+                                    {{ 'Activate total free shipping'|trans({}, 'mondialrelaypickuppoint.bo.default') }}
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">{{ 'Or activate free shipping from (€) :'|trans({}, 'mondialrelaypickuppoint.bo.default') }}</label>
+                            <div class="input-group">
+                                {{ form_widget(freeshipping_form.freeshipping_from, {attr: {class: 'form-control'}}) }}
+                                <button class="btn btn-secondary" type="submit">{{ 'Save'|trans }}</button>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="hidden" name="{{ freeshipping_form.vars.full_name }}[_token]" value="{{ freeshipping_form._token.vars.value }}">
+                </form>
+
+                {% if areas is empty %}
+                    <div class="alert alert-warning">
+                        {{ 'There\'s no shipping zone defined for Mondial Relay. Please configure module\'s shipping zones.'|trans({}, 'mondialrelaypickuppoint.bo.default') }}
+                        <a href="/admin/configuration/shipping_zones">{{ 'Configure shipping zones'|trans({}, 'mondialrelaypickuppoint.bo.default') }}</a>
+                    </div>
+                {% else %}
+                    {% for area in areas %}
+                        <div class="card mb-3">
+                            <div class="card-header text-uppercase">
+                                {{ 'Shipping zone'|trans({}, 'mondialrelaypickuppoint.bo.default') }} "{{ area.name }}"
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    {# ---- Delivery prices ---- #}
+                                    <div class="col-md-8">
+                                        <div class="card">
+                                            <div class="card-header">{{ 'Delivery prices'|trans({}, 'mondialrelaypickuppoint.bo.default') }}</div>
+                                            <div class="card-body">
+                                                <form action="{{ path('mondial_relay_pickup_point.price.save', {areaId: area.id, moduleId: module_id}) }}" method="post">
+                                                    <table class="table table-sm table-striped">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>{{ 'Cart weight up to...'|trans({}, 'mondialrelaypickuppoint.bo.default') }}</th>
+                                                                <th>{{ 'Price with tax'|trans({}, 'mondialrelaypickuppoint.bo.default') }}</th>
+                                                                <th>&nbsp;</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                        {% for price in area.prices %}
+                                                            <tr>
+                                                                <td>
+                                                                    <div class="input-group">
+                                                                        <input type="text" class="form-control"
+                                                                               name="{{ prices_update_form.vars.full_name }}[max_weight][{{ price.id }}]"
+                                                                               value="{{ price.max_weight|number_format(2, '.', '') }}">
+                                                                        <span class="input-group-text">{{ 'kg'|trans({}, 'mondialrelaypickuppoint.bo.default') }}</span>
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <div class="input-group">
+                                                                        <input type="text" class="form-control"
+                                                                               name="{{ prices_update_form.vars.full_name }}[price][{{ price.id }}]"
+                                                                               value="{{ price.price|number_format(2, '.', '') }}">
+                                                                        <span class="input-group-text">{{ currency_symbol }}</span>
+                                                                    </div>
+                                                                </td>
+                                                                <td class="text-nowrap">
+                                                                    <a href="{{ path('mondial_relay_pickup_point.price.delete', {priceId: price.id, moduleId: module_id}) }}"
+                                                                       class="btn btn-danger btn-sm"
+                                                                       title="{{ 'Delete this price'|trans({}, 'mondialrelaypickuppoint.bo.default') }}">
+                                                                        <i class="bi bi-trash"></i>
+                                                                    </a>
+                                                                </td>
+                                                            </tr>
+                                                        {% endfor %}
+                                                        </tbody>
+                                                        <tfoot>
+                                                            <tr>
+                                                                <td colspan="99" class="text-end">
+                                                                    <input type="hidden" name="{{ prices_update_form.vars.full_name }}[_token]" value="{{ prices_update_form._token.vars.value }}">
+                                                                    <button class="btn btn-primary btn-sm" type="submit">
+                                                                        <i class="bi bi-check-lg"></i> {{ 'Save changes'|trans({}, 'mondialrelaypickuppoint.bo.default') }}
+                                                                    </button>
+                                                                </td>
+                                                            </tr>
+                                                        </tfoot>
+                                                    </table>
+                                                </form>
+
+                                                {# ---- Add a new price ---- #}
+                                                <form action="{{ path('mondial_relay_pickup_point.price.create', {areaId: area.id, moduleId: module_id}) }}" method="post">
+                                                    <table class="table table-sm table-striped">
+                                                        <tbody>
+                                                            <tr><th colspan="99">{{ 'Add a new price'|trans({}, 'mondialrelaypickuppoint.bo.default') }}</th></tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <div class="input-group">
+                                                                        <input type="text" class="form-control" name="{{ price_create_form.vars.full_name }}[max_weight]">
+                                                                        <span class="input-group-text">{{ 'kg'|trans({}, 'mondialrelaypickuppoint.bo.default') }}</span>
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <div class="input-group">
+                                                                        <input type="text" class="form-control" name="{{ price_create_form.vars.full_name }}[price]">
+                                                                        <span class="input-group-text">{{ currency_symbol }}</span>
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <input type="hidden" name="{{ price_create_form.vars.full_name }}[_token]" value="{{ price_create_form._token.vars.value }}">
+                                                                    <button class="btn btn-primary btn-sm" type="submit" title="{{ 'Add this price'|trans({}, 'mondialrelaypickuppoint.bo.default') }}">
+                                                                        <i class="bi bi-plus-lg"></i>
+                                                                    </button>
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {# ---- Area properties ---- #}
+                                    <div class="col-md-4">
+                                        <div class="card mb-3">
+                                            <div class="card-header">{{ 'Area properties'|trans({}, 'mondialrelaypickuppoint.bo.default') }}</div>
+                                            <div class="card-body">
+                                                <form action="{{ path('mondial_relay_pickup_point.area-attributes.save', {areaId: area.id, moduleId: module_id}) }}" method="post">
+                                                    <label class="form-label">{{ 'Delivery delay'|trans({}, 'mondialrelaypickuppoint.bo.default') }}</label>
+                                                    <div class="input-group mb-2">
+                                                        <input type="text" class="form-control"
+                                                               name="{{ area_attributes_form.vars.full_name }}[delivery_time]"
+                                                               value="{{ area.delivery_time }}">
+                                                        <span class="input-group-text">{{ 'days'|trans({}, 'mondialrelaypickuppoint.bo.default') }}</span>
+                                                    </div>
+                                                    <input type="hidden" name="{{ area_attributes_form.vars.full_name }}[_token]" value="{{ area_attributes_form._token.vars.value }}">
+                                                    <button type="submit" class="btn btn-primary btn-sm">
+                                                        <i class="bi bi-check-lg"></i> {{ 'Save'|trans({}, 'mondialrelaypickuppoint.bo.default') }}
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+
+                                        {# ---- Free shipping for this area ---- #}
+                                        <div class="card">
+                                            <div class="card-header">{{ 'Free Shipping Area'|trans({}, 'mondialrelaypickuppoint.bo.default') }}</div>
+                                            <div class="card-body">
+                                                <form action="{{ path('mondial_relay_pickup_point.edit.area.freeshipping') }}" method="post">
+                                                    <label class="form-label">{{ 'Activate free shipping from (€) :'|trans({}, 'mondialrelaypickuppoint.bo.default') }}</label>
+                                                    <div class="input-group">
+                                                        <input type="hidden" name="area-id" value="{{ area.id }}">
+                                                        <input type="number" step="0.01" name="cart-amount" class="form-control" value="{{ area.free_shipping_amount }}">
+                                                        <button class="btn btn-secondary" type="submit">{{ 'Save'|trans }}</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+
+            {# ===================== TAX RULE ===================== #}
+            <div class="tab-pane fade" id="mr-tax-rule" role="tabpanel">
+                <h3 class="h5">{{ 'Mondial Relay Pickup Delivery Tax Rule Configuration'|trans({}, 'mondialrelaypickuppoint.bo.default') }}</h3>
+                <form action="{{ path('mondial_relay_pickup_point_tax_rule_save') }}" method="post">
+                    {{ form_row(tax_rule_form.tax_rule_id) }}
+                    <input type="hidden" name="{{ tax_rule_form.vars.full_name }}[_token]" value="{{ tax_rule_form._token.vars.value }}">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save"></i> {{ 'Save'|trans }}
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

@@ -15,6 +15,24 @@ use Thelia\Core\Hook\BaseHook;
 
 class PdfHookManager extends BaseHook
 {
+    public static function getSubscribedHooks(): array
+    {
+        return [
+            'delivery.delivery-address' => [
+                ['type' => 'pdf', 'method' => 'onDeliveryAddress'],
+            ],
+            'invoice.delivery-address' => [
+                ['type' => 'pdf', 'method' => 'onDeliveryAddress'],
+            ],
+            'delivery.after-delivery-module' => [
+                ['type' => 'pdf', 'method' => 'onAfterDeliveryModule'],
+            ],
+            'invoice.after-delivery-module' => [
+                ['type' => 'pdf', 'method' => 'onAfterDeliveryModule'],
+            ],
+        ];
+    }
+
     public function onDeliveryAddress(HookRenderEvent $event)
     {
         $event->add(

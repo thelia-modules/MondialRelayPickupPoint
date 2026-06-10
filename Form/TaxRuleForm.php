@@ -50,4 +50,9 @@ class TaxRuleForm extends BaseForm
 
         return $res;
     }
+
+    public static function getName(): string
+    {
+        return "mondialrelaypickuppoint_tax_rule_form";
+    }
 }
