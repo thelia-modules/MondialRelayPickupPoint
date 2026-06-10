@@ -102,7 +102,7 @@ class InsuranceController extends BaseAdminController
 
     /**
      * @param $insuranceId
-     * @return mixed|\Thelia\Core\HttpFoundation\Response
+     * @return mixed|\Symfony\Component\HttpFoundation\Response
      * @throws \Propel\Runtime\Exception\PropelException
      */
     public function deleteAction($insuranceId)

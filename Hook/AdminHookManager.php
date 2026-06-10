@@ -11,12 +11,15 @@
 namespace MondialRelayPickupPoint\Hook;
 
 use MondialRelayPickupPoint\Form\FreeShippingForm;
+use MondialRelayPickupPoint\Form\InsuranceCreateForm;
+use MondialRelayPickupPoint\Form\InsurancesUpdateForm;
 use MondialRelayPickupPoint\Form\PriceAttributesUpdateForm;
 use MondialRelayPickupPoint\Form\PriceCreateForm;
 use MondialRelayPickupPoint\Form\PricesUpdateForm;
 use MondialRelayPickupPoint\Form\SettingsForm;
 use MondialRelayPickupPoint\Form\TaxRuleForm;
 use MondialRelayPickupPoint\Model\MondialRelayPickupPointAreaFreeshippingQuery;
+use MondialRelayPickupPoint\Model\MondialRelayPickupPointInsuranceQuery;
 use MondialRelayPickupPoint\Model\MondialRelayPickupPointPriceQuery;
 use MondialRelayPickupPoint\Model\MondialRelayPickupPointZoneConfigurationQuery;
 use MondialRelayPickupPoint\MondialRelayPickupPoint;
@@ -79,10 +82,13 @@ class AdminHookManager extends BaseHook
                 'prices_update_form' => $this->formFactory->createForm(PricesUpdateForm::getName())->createView()->getView(),
                 'price_create_form' => $this->formFactory->createForm(PriceCreateForm::getName())->createView()->getView(),
                 'area_attributes_form' => $this->formFactory->createForm(PriceAttributesUpdateForm::getName())->createView()->getView(),
+                'insurances_update_form' => $this->formFactory->createForm(InsurancesUpdateForm::getName())->createView()->getView(),
+                'insurance_create_form' => $this->formFactory->createForm(InsuranceCreateForm::getName())->createView()->getView(),
                 'module_id' => $moduleId,
                 'free_shipping_active' => (bool) $freeShippingActive,
                 'currency_symbol' => $this->getDefaultCurrencySymbol(),
                 'areas' => $this->getAreas($moduleId),
+                'insurances' => $this->getInsurances(),
             ])
         );
     }
@@ -140,6 +146,30 @@ class AdminHookManager extends BaseHook
                 'prices' => $prices,
                 'delivery_time' => $zoneConfig?->getDeliveryTime(),
                 'free_shipping_amount' => $freeShipping?->getCartAmount(),
+            ];
+        }
+
+        return $result;
+    }
+
+    /**
+     * Reproduces {loop type="mondialrelaypickuppoint.insurances"} in PHP.
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    private function getInsurances(): array
+    {
+        $result = [];
+
+        $rows = MondialRelayPickupPointInsuranceQuery::create()
+            ->orderByMaxValue()
+            ->find();
+
+        foreach ($rows as $item) {
+            $result[] = [
+                'id' => $item->getId(),
+                'max_value' => $item->getMaxValue(),
+                'price' => $item->getPriceWithTax(),
             ];
         }
 

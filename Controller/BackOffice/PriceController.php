@@ -104,8 +104,8 @@ class PriceController extends BaseAdminController
     }
 
     /**
-     * @param $insuranceId
-     * @return mixed|\Thelia\Core\HttpFoundation\Response
+     * @param $priceId
+     * @return mixed|\Symfony\Component\HttpFoundation\Response
      * @throws \Propel\Runtime\Exception\PropelException
      */
     public function deleteAction($priceId, $moduleId)

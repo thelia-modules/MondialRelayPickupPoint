@@ -22,6 +22,11 @@
                     {{ 'Tax Rules'|trans({}, 'mondialrelaypickuppoint.bo.default') }}
                 </button>
             </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#mr-insurances" type="button" role="tab">
+                    {{ 'Insurances'|trans({}, 'mondialrelaypickuppoint.bo.default') }}
+                </button>
+            </li>
         </ul>
 
         <div class="tab-content">
@@ -237,6 +242,90 @@
                     <button type="submit" class="btn btn-primary">
                         <i class="bi bi-save"></i> {{ 'Save'|trans }}
                     </button>
+                </form>
+            </div>
+
+            {# ===================== INSURANCES ===================== #}
+            <div class="tab-pane fade" id="mr-insurances" role="tabpanel">
+                {# ---- Update existing insurances ---- #}
+                <form action="{{ path('mondial_relay_pickup_point.insurance.save') }}" method="post">
+                    <table class="table table-sm table-striped">
+                        <thead>
+                            <tr>
+                                <th>{{ 'Cart value'|trans({}, 'mondialrelaypickuppoint.bo.default') }}</th>
+                                <th>{{ 'Insurance price with tax'|trans({}, 'mondialrelaypickuppoint.bo.default') }}</th>
+                                <th>&nbsp;</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for insurance in insurances %}
+                            <tr>
+                                <td>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control"
+                                               name="{{ insurances_update_form.vars.full_name }}[max_value][{{ insurance.id }}]"
+                                               value="{{ insurance.max_value|number_format(2, '.', '') }}">
+                                        <span class="input-group-text">{{ currency_symbol }}</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control"
+                                               name="{{ insurances_update_form.vars.full_name }}[price_with_tax][{{ insurance.id }}]"
+                                               value="{{ insurance.price|number_format(2, '.', '') }}">
+                                        <span class="input-group-text">{{ currency_symbol }}</span>
+                                    </div>
+                                </td>
+                                <td class="text-nowrap">
+                                    <a href="{{ path('mondial_relay_pickup_point.insurance.delete', {insuranceId: insurance.id}) }}"
+                                       class="btn btn-danger btn-sm"
+                                       title="{{ 'Delete this insurance'|trans({}, 'mondialrelaypickuppoint.bo.default') }}">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="99" class="text-end">
+                                    <input type="hidden" name="{{ insurances_update_form.vars.full_name }}[_token]" value="{{ insurances_update_form._token.vars.value }}">
+                                    <button class="btn btn-primary btn-sm" type="submit">
+                                        <i class="bi bi-check-lg"></i> {{ 'Save changes'|trans({}, 'mondialrelaypickuppoint.bo.default') }}
+                                    </button>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </form>
+
+                {# ---- Add a new insurance ---- #}
+                <form action="{{ path('mondial_relay_pickup_point.insurance.create') }}" method="post">
+                    <table class="table table-sm table-striped">
+                        <tbody>
+                            <tr><th colspan="99">{{ 'Add a new insurance'|trans({}, 'mondialrelaypickuppoint.bo.default') }}</th></tr>
+                            <tr>
+                                <td>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" name="{{ insurance_create_form.vars.full_name }}[max_value]">
+                                        <span class="input-group-text">{{ currency_symbol }}</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" name="{{ insurance_create_form.vars.full_name }}[price_with_tax]">
+                                        <span class="input-group-text">{{ currency_symbol }}</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <input type="hidden" name="{{ insurance_create_form.vars.full_name }}[_token]" value="{{ insurance_create_form._token.vars.value }}">
+                                    <button type="submit" class="btn btn-primary btn-sm" title="{{ 'Add new insurance'|trans({}, 'mondialrelaypickuppoint.bo.default') }}">
+                                        <i class="bi bi-plus-lg"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </form>
             </div>
         </div>
