@@ -64,7 +64,7 @@ class APIListener implements EventSubscriberInterface
 
         $locale = $this->requestStack->getCurrentRequest()->getSession()->getLang()->getLocale();
 
-        if (empty($countryAreas = $module->getAreaForCountry($country))) {
+        if (empty($countryAreas = $module->getAreasForCountry($country))) {
             throw new DeliveryException(Translator::getInstance()->trans("Your delivery country is not covered by Mondial Relay"));
         }
 

@@ -45,7 +45,7 @@ class DeliveryPrice extends BaseLoop implements ArraySearchLoopInterface
     /**
      * @return \Thelia\Core\Template\Loop\Argument\ArgumentCollection
      */
-    protected function getArgDefinitions()
+    protected function getArgDefinitions(): ArgumentCollection
     {
         return new ArgumentCollection(
             Argument::createIntTypeArgument('country_id', null, true),
@@ -67,7 +67,7 @@ class DeliveryPrice extends BaseLoop implements ArraySearchLoopInterface
      * @throws \Exception
      * @throws \Propel\Runtime\Exception\PropelException
      */
-    public function buildArray()
+    public function buildArray(): array
     {
         $results = [];
 
@@ -151,7 +151,7 @@ class DeliveryPrice extends BaseLoop implements ArraySearchLoopInterface
         return $results;
     }
 
-    public function parseResults(LoopResult $loopResult)
+    public function parseResults(LoopResult $loopResult): LoopResult
     {
         /** @var MondialRelayPickupPointPrice $item */
         foreach ($loopResult->getResultDataCollection() as $resultItem) {

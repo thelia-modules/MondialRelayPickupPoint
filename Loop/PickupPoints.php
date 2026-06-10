@@ -32,7 +32,7 @@ class PickupPoints extends BaseLoop implements ArraySearchLoopInterface
     /**
      * @return \Thelia\Core\Template\Loop\Argument\ArgumentCollection
      */
-    protected function getArgDefinitions()
+    protected function getArgDefinitions(): ArgumentCollection
     {
         return new ArgumentCollection(
             Argument::createIntTypeArgument('country_id', null, true),
@@ -48,7 +48,7 @@ class PickupPoints extends BaseLoop implements ArraySearchLoopInterface
      * @throws \Exception
      * @throws \Propel\Runtime\Exception\PropelException
      */
-    public function buildArray()
+    public function buildArray(): array
     {
         $event = new FindRelayEvent(
             $this->getCountryId(),
@@ -62,7 +62,7 @@ class PickupPoints extends BaseLoop implements ArraySearchLoopInterface
         return $event->getPoints();
     }
 
-    public function parseResults(LoopResult $loopResult)
+    public function parseResults(LoopResult $loopResult): LoopResult
     {
         foreach ($loopResult->getResultDataCollection() as $item) {
             $loopResultRow = new LoopResultRow($item);

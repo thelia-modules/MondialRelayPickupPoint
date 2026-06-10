@@ -20,7 +20,7 @@ use Thelia\Core\Install\Database;
 use Thelia\Model\Area;
 use Thelia\Model\AreaDeliveryModule;
 use Thelia\Model\AreaQuery;
-use Thelia\Model\Base\State;
+use Thelia\Model\State;
 use Thelia\Model\Country;
 use Thelia\Model\CountryArea;
 use Thelia\Model\CountryQuery;
@@ -217,9 +217,9 @@ class MondialRelayPickupPoint extends AbstractDeliveryModuleWithState
      * @param State|null $state
      * @return boolean
      */
-    public function isValidDelivery(Country $country, State $state = null)
+    public function isValidDelivery(Country $country, State $state = null): bool
     {
-        return !empty($this->getAreaForCountry($country)->getData());
+        return !empty($this->getAreasForCountry($country)->getData());
     }
 
     /**
@@ -231,7 +231,7 @@ class MondialRelayPickupPoint extends AbstractDeliveryModuleWithState
      * @return OrderPostage|float             the delivery price
      * @throws PropelException if the postage price cannot be calculated.
      */
-    public function getPostage(Country $country, State $state = null)
+    public function getPostage(Country $country, State $state = null): OrderPostage|float
     {
         $request = $this->getRequest();
 
@@ -245,7 +245,7 @@ class MondialRelayPickupPoint extends AbstractDeliveryModuleWithState
         return $orderPostage;
     }
 
-    public function getAreaForCountry(Country $country, State $state = null)
+    public function getAreasForCountry(Country $country, State $state = null)
     {
         return AreaQuery::create()
             ->useAreaDeliveryModuleQuery()

@@ -15,6 +15,7 @@ use MondialRelayPickupPoint\Model\MondialRelayPickupPointZoneConfiguration;
 use MondialRelayPickupPoint\Model\MondialRelayPickupPointZoneConfigurationQuery;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Thelia\Core\Template\Element\BaseLoop;
+use Propel\Runtime\ActiveQuery\ModelCriteria;
 use Thelia\Core\Template\Element\LoopResult;
 use Thelia\Core\Template\Element\LoopResultRow;
 use Thelia\Core\Template\Element\PropelSearchLoopInterface;
@@ -31,7 +32,7 @@ class AreaAttributes extends BaseLoop implements PropelSearchLoopInterface
     /**
      * @return \Thelia\Core\Template\Loop\Argument\ArgumentCollection
      */
-    protected function getArgDefinitions()
+    protected function getArgDefinitions(): ArgumentCollection
     {
         return new ArgumentCollection(
             Argument::createIntListTypeArgument('area_id')
@@ -39,7 +40,7 @@ class AreaAttributes extends BaseLoop implements PropelSearchLoopInterface
     }
 
 
-    public function buildModelCriteria()
+    public function buildModelCriteria(): ModelCriteria
     {
         $query = MondialRelayPickupPointZoneConfigurationQuery::create();
 
@@ -51,7 +52,7 @@ class AreaAttributes extends BaseLoop implements PropelSearchLoopInterface
         return $query;
     }
 
-    public function parseResults(LoopResult $loopResult)
+    public function parseResults(LoopResult $loopResult): LoopResult
     {
         /** @var MondialRelayPickupPointZoneConfiguration $item */
         foreach ($loopResult->getResultDataCollection() as $item) {

@@ -5,6 +5,7 @@ namespace MondialRelayPickupPoint\Loop;
 use MondialRelayPickupPoint\Model\MondialRelayPickupPointFreeshipping;
 use MondialRelayPickupPoint\Model\MondialRelayPickupPointFreeshippingQuery;
 use Thelia\Core\Template\Element\BaseLoop;
+use Propel\Runtime\ActiveQuery\ModelCriteria;
 use Thelia\Core\Template\Element\LoopResult;
 use Thelia\Core\Template\Element\LoopResultRow;
 use Thelia\Core\Template\Element\PropelSearchLoopInterface;
@@ -16,14 +17,14 @@ class FreeShipping extends BaseLoop implements PropelSearchLoopInterface
     /**
      * @return ArgumentCollection
      */
-    protected function getArgDefinitions()
+    protected function getArgDefinitions(): ArgumentCollection
     {
         return new ArgumentCollection(
             Argument::createIntTypeArgument('id')
         );
     }
 
-    public function buildModelCriteria()
+    public function buildModelCriteria(): ModelCriteria
     {
         if (null === $isFreeShippingActive = MondialRelayPickupPointFreeshippingQuery::create()->findOneById(1)){
             $isFreeShippingActive = new MondialRelayPickupPointFreeshipping();
@@ -35,7 +36,7 @@ class FreeShipping extends BaseLoop implements PropelSearchLoopInterface
         return MondialRelayPickupPointFreeshippingQuery::create()->filterById(1);
     }
 
-    public function parseResults(LoopResult $loopResult)
+    public function parseResults(LoopResult $loopResult): LoopResult
     {
         /** @var MondialRelayPickupPointFreeshipping $freeshipping */
         foreach ($loopResult->getResultDataCollection() as $freeshipping) {

@@ -14,6 +14,7 @@ use MondialRelayPickupPoint\Model\MondialRelayPickupPointAddress;
 use MondialRelayPickupPoint\Model\MondialRelayPickupPointAddressQuery;
 use MondialRelayPickupPoint\MondialRelayPickupPoint;
 use Thelia\Core\Template\Element\BaseLoop;
+use Propel\Runtime\ActiveQuery\ModelCriteria;
 use Thelia\Core\Template\Element\LoopResult;
 use Thelia\Core\Template\Element\LoopResultRow;
 use Thelia\Core\Template\Element\PropelSearchLoopInterface;
@@ -31,7 +32,7 @@ class SelectedPickupPoint extends BaseLoop implements PropelSearchLoopInterface
     /**
      * @return \Thelia\Core\Template\Loop\Argument\ArgumentCollection
      */
-    protected function getArgDefinitions()
+    protected function getArgDefinitions(): ArgumentCollection
     {
         return new ArgumentCollection(
             Argument::createIntTypeArgument('order_address_id'),
@@ -44,7 +45,7 @@ class SelectedPickupPoint extends BaseLoop implements PropelSearchLoopInterface
      * @throws \Exception
      * @return MondialRelayPickupPointAddressQuery|null
      */
-    public function buildModelCriteria()
+    public function buildModelCriteria(): ModelCriteria
     {
         if (null !== $relayId = $this->getCurrentRequest()->getSession()->get(MondialRelayPickupPoint::SESSION_SELECTED_PICKUP_RELAY_ID)) {
             return MondialRelayPickupPointAddressQuery::create()->filterById($relayId);
@@ -60,7 +61,7 @@ class SelectedPickupPoint extends BaseLoop implements PropelSearchLoopInterface
         return null;
     }
 
-    public function parseResults(LoopResult $loopResult)
+    public function parseResults(LoopResult $loopResult): LoopResult
     {
         /** @var MondialRelayPickupPointAddress $item */
         foreach ($loopResult->getResultDataCollection() as $item) {
