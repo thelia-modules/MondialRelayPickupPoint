@@ -21,6 +21,7 @@ use Thelia\Core\Security\AccessManager;
 use Thelia\Core\Security\Resource\AdminResources;
 use Thelia\Core\Template\ParserContext;
 use Thelia\Log\Tlog;
+use Thelia\Tools\TokenProvider;
 use Thelia\Tools\URL;
 
 /**
@@ -105,11 +106,13 @@ class InsuranceController extends BaseAdminController
      * @return mixed|\Symfony\Component\HttpFoundation\Response
      * @throws \Propel\Runtime\Exception\PropelException
      */
-    public function deleteAction($insuranceId)
+    public function deleteAction($insuranceId, TokenProvider $tokenProvider)
     {
         if (null !== $response = $this->checkAuth(AdminResources::MODULE, 'MondialRelayPickupPoint', AccessManager::DELETE)) {
             return $response;
         }
+
+        $tokenProvider->checkToken((string) $this->getRequest()->query->get('_token'));
 
         MondialRelayPickupPointInsuranceQuery::create()->filterById($insuranceId)->delete();
 

@@ -34,7 +34,7 @@
         <requirement key="moduleId">\d+</requirement>
     </route>
 
-    <route id="mondial_relay_pickup_point.price.delete" path="/admin/module/MondialRelayPickupPoint/prices/delete/{priceId}/{moduleId}">
+    <route id="mondial_relay_pickup_point.price.delete" path="/admin/module/MondialRelayPickupPoint/prices/delete/{priceId}/{moduleId}" methods="post">
         <default key="_controller">MondialRelayPickupPoint\Controller\BackOffice\PriceController::deleteAction</default>
         <requirement key="priceId">\d+</requirement>
         <requirement key="moduleId">\d+</requirement>
@@ -50,7 +50,7 @@
         <default key="_controller">MondialRelayPickupPoint\Controller\BackOffice\InsuranceController::createAction</default>
     </route>
 
-    <route id="mondial_relay_pickup_point.insurance.delete" path="/admin/module/MondialRelayPickupPoint/insurances/delete/{insuranceId}">
+    <route id="mondial_relay_pickup_point.insurance.delete" path="/admin/module/MondialRelayPickupPoint/insurances/delete/{insuranceId}" methods="post">
         <default key="_controller">MondialRelayPickupPoint\Controller\BackOffice\InsuranceController::deleteAction</default>
         <requirement key="insuranceId">\d+</requirement>
     </route>

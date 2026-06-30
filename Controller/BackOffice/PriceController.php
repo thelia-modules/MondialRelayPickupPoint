@@ -21,6 +21,7 @@ use Thelia\Core\Security\AccessManager;
 use Thelia\Core\Security\Resource\AdminResources;
 use Thelia\Core\Template\ParserContext;
 use Thelia\Log\Tlog;
+use Thelia\Tools\TokenProvider;
 use Thelia\Tools\URL;
 
 /**
@@ -108,11 +109,13 @@ class PriceController extends BaseAdminController
      * @return mixed|\Symfony\Component\HttpFoundation\Response
      * @throws \Propel\Runtime\Exception\PropelException
      */
-    public function deleteAction($priceId, $moduleId)
+    public function deleteAction($priceId, $moduleId, TokenProvider $tokenProvider)
     {
         if (null !== $response = $this->checkAuth(AdminResources::MODULE, 'MondialRelayPickupPoint', AccessManager::DELETE)) {
             return $response;
         }
+
+        $tokenProvider->checkToken((string) $this->getRequest()->query->get('_token'));
 
         MondialRelayPickupPointPriceQuery::create()->filterById($priceId)->delete();
 

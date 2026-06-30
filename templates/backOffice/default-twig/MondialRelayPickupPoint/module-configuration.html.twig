@@ -65,6 +65,8 @@
 
             {# ===================== PRICES ===================== #}
             <div class="tab-pane fade" id="mr-prices" role="tabpanel">
+                {# Standalone form so per-row delete buttons can POST a CSRF-protected request without nesting forms #}
+                <form id="mr-price-delete" method="post"></form>
                 {# Total free shipping toggle #}
                 <form action="{{ path('mondial_relay_pickup_point.toggle.freeshipping') }}" method="post" class="card mb-3">
                     <div class="card-body row align-items-end">
@@ -136,11 +138,12 @@
                                                                     </div>
                                                                 </td>
                                                                 <td class="text-nowrap">
-                                                                    <a href="{{ path('mondial_relay_pickup_point.price.delete', {priceId: price.id, moduleId: module_id}) }}"
+                                                                    <button type="submit" form="mr-price-delete"
+                                                                       formaction="{{ path('mondial_relay_pickup_point.price.delete', {priceId: price.id, moduleId: module_id}) }}?_token={{ assignToken() }}"
                                                                        class="btn btn-danger btn-sm"
                                                                        title="{{ 'Delete this price'|trans({}, 'mondialrelaypickuppoint.bo.default') }}">
                                                                         <i class="bi bi-trash"></i>
-                                                                    </a>
+                                                                    </button>
                                                                 </td>
                                                             </tr>
                                                         {% endfor %}
@@ -247,6 +250,8 @@
 
             {# ===================== INSURANCES ===================== #}
             <div class="tab-pane fade" id="mr-insurances" role="tabpanel">
+                {# Standalone form so per-row delete buttons can POST a CSRF-protected request without nesting forms #}
+                <form id="mr-insurance-delete" method="post"></form>
                 {# ---- Update existing insurances ---- #}
                 <form action="{{ path('mondial_relay_pickup_point.insurance.save') }}" method="post">
                     <table class="table table-sm table-striped">
@@ -277,11 +282,12 @@
                                     </div>
                                 </td>
                                 <td class="text-nowrap">
-                                    <a href="{{ path('mondial_relay_pickup_point.insurance.delete', {insuranceId: insurance.id}) }}"
+                                    <button type="submit" form="mr-insurance-delete"
+                                       formaction="{{ path('mondial_relay_pickup_point.insurance.delete', {insuranceId: insurance.id}) }}?_token={{ assignToken() }}"
                                        class="btn btn-danger btn-sm"
                                        title="{{ 'Delete this insurance'|trans({}, 'mondialrelaypickuppoint.bo.default') }}">
                                         <i class="bi bi-trash"></i>
-                                    </a>
+                                    </button>
                                 </td>
                             </tr>
                         {% endfor %}
