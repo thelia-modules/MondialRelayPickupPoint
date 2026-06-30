@@ -35,6 +35,7 @@ use Thelia\Controller\Admin\BaseAdminController;
 use Thelia\Core\Security\Resource\AdminResources;
 use Thelia\Core\Security\AccessManager;
 use Thelia\Model\AreaQuery;
+use Thelia\Tools\TokenProvider;
 use Thelia\Tools\URL;
 
 class FreeShippingController extends BaseAdminController
@@ -77,12 +78,14 @@ class FreeShippingController extends BaseAdminController
     /**
      * @return mixed|Response|null
      */
-    public function setAreaFreeShipping()
+    public function setAreaFreeShipping(TokenProvider $tokenProvider)
     {
         if (null !== $response = $this
                 ->checkAuth(array(AdminResources::MODULE), array('MondialRelayPickupPoint'), AccessManager::UPDATE)) {
             return $response;
         }
+
+        $tokenProvider->checkToken((string) $this->getRequest()->request->get('_token'));
 
         try {
             $data = $this->getRequest()->request;
