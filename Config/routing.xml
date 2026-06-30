@@ -7,14 +7,14 @@
 
     <!-- Settings management -->
 
-    <route id="mondial_relay_pickup_point.settings.save" path="/admin/module/MondialRelayPickupPoint/settings/save">
+    <route id="mondial_relay_pickup_point.settings.save" path="/admin/module/MondialRelayPickupPoint/settings/save" methods="post">
         <default key="_controller">MondialRelayPickupPoint\Controller\BackOffice\ConfigurationController::saveAction</default>
     </route>
 
 
     <!-- Area attributes management -->
 
-    <route id="mondial_relay_pickup_point.area-attributes.save" path="/admin/module/MondialRelayPickupPoint/area-attributes/save/{areaId}/{moduleId}">
+    <route id="mondial_relay_pickup_point.area-attributes.save" path="/admin/module/MondialRelayPickupPoint/area-attributes/save/{areaId}/{moduleId}" methods="post">
         <default key="_controller">MondialRelayPickupPoint\Controller\BackOffice\AreaAttributesController::saveAction</default>
         <requirement key="areaId">\d+</requirement>
         <requirement key="moduleId">\d+</requirement>
@@ -22,13 +22,13 @@
 
     <!-- Prices management -->
 
-    <route id="mondial_relay_pickup_point.price.save" path="/admin/module/MondialRelayPickupPoint/prices/save/{areaId}/{moduleId}">
+    <route id="mondial_relay_pickup_point.price.save" path="/admin/module/MondialRelayPickupPoint/prices/save/{areaId}/{moduleId}" methods="post">
         <default key="_controller">MondialRelayPickupPoint\Controller\BackOffice\PriceController::saveAction</default>
         <requirement key="areaId">\d+</requirement>
         <requirement key="moduleId">\d+</requirement>
     </route>
 
-    <route id="mondial_relay_pickup_point.price.create" path="/admin/module/MondialRelayPickupPoint/prices/create/{areaId}/{moduleId}">
+    <route id="mondial_relay_pickup_point.price.create" path="/admin/module/MondialRelayPickupPoint/prices/create/{areaId}/{moduleId}" methods="post">
         <default key="_controller">MondialRelayPickupPoint\Controller\BackOffice\PriceController::createAction</default>
         <requirement key="areaId">\d+</requirement>
         <requirement key="moduleId">\d+</requirement>
@@ -42,11 +42,11 @@
 
     <!-- Insurances management -->
 
-    <route id="mondial_relay_pickup_point.insurance.save" path="/admin/module/MondialRelayPickupPoint/insurances/save">
+    <route id="mondial_relay_pickup_point.insurance.save" path="/admin/module/MondialRelayPickupPoint/insurances/save" methods="post">
         <default key="_controller">MondialRelayPickupPoint\Controller\BackOffice\InsuranceController::saveAction</default>
     </route>
 
-    <route id="mondial_relay_pickup_point.insurance.create" path="/admin/module/MondialRelayPickupPoint/insurances/create">
+    <route id="mondial_relay_pickup_point.insurance.create" path="/admin/module/MondialRelayPickupPoint/insurances/create" methods="post">
         <default key="_controller">MondialRelayPickupPoint\Controller\BackOffice\InsuranceController::createAction</default>
     </route>
 
