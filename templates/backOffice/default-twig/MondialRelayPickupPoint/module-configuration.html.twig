@@ -35,11 +35,31 @@
                 <form action="{{ path('mondial_relay_pickup_point.settings.save') }}" method="post">
                     <div class="row">
                         <div class="col-md-6">
-                            {{ form_row(settings_form.code_enseigne) }}
-                            {{ form_row(settings_form.private_key) }}
-                            {{ form_row(settings_form.webservice_url) }}
-                            {{ form_row(settings_form.google_maps_api_key) }}
-                            {{ form_row(settings_form.allow_insurance) }}
+                            <div class="mb-3">
+                                {{ form_label(settings_form.code_enseigne) }}
+                                {{ form_widget(settings_form.code_enseigne, {attr: {class: 'form-control'}}) }}
+                                {{ form_errors(settings_form.code_enseigne) }}
+                            </div>
+                            <div class="mb-3">
+                                {{ form_label(settings_form.private_key) }}
+                                {{ form_widget(settings_form.private_key, {attr: {class: 'form-control'}}) }}
+                                {{ form_errors(settings_form.private_key) }}
+                            </div>
+                            <div class="mb-3">
+                                {{ form_label(settings_form.webservice_url) }}
+                                {{ form_widget(settings_form.webservice_url, {attr: {class: 'form-control'}}) }}
+                                {{ form_errors(settings_form.webservice_url) }}
+                            </div>
+                            <div class="mb-3">
+                                {{ form_label(settings_form.google_maps_api_key) }}
+                                {{ form_widget(settings_form.google_maps_api_key, {attr: {class: 'form-control'}}) }}
+                                {{ form_errors(settings_form.google_maps_api_key) }}
+                            </div>
+                            <div class="mb-3 form-check">
+                                {{ form_widget(settings_form.allow_insurance, {attr: {class: 'form-check-input'}}) }}
+                                {{ form_label(settings_form.allow_insurance, null, {label_attr: {class: 'form-check-label'}}) }}
+                                {{ form_errors(settings_form.allow_insurance) }}
+                            </div>
                         </div>
                         <div class="col-md-6 text-center" style="margin-top: 40px; padding: 0 10%;">
                             <p>
@@ -241,7 +261,11 @@
             <div class="tab-pane fade" id="mr-tax-rule" role="tabpanel">
                 <h3 class="h5">{{ 'Mondial Relay Pickup Delivery Tax Rule Configuration'|trans({}, 'mondialrelaypickuppoint.bo.default') }}</h3>
                 <form action="{{ path('mondial_relay_pickup_point_tax_rule_save') }}" method="post">
-                    {{ form_row(tax_rule_form.tax_rule_id) }}
+                    <div class="mb-3">
+                        {{ form_label(tax_rule_form.tax_rule_id) }}
+                        {{ form_widget(tax_rule_form.tax_rule_id, {attr: {class: 'form-select'}}) }}
+                        {{ form_errors(tax_rule_form.tax_rule_id) }}
+                    </div>
                     <input type="hidden" name="{{ tax_rule_form.vars.full_name }}[_token]" value="{{ tax_rule_form._token.vars.value }}">
                     <button type="submit" class="btn btn-primary">
                         <i class="bi bi-save"></i> {{ 'Save'|trans }}
