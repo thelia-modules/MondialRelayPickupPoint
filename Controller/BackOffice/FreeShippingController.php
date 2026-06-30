@@ -34,6 +34,7 @@ use Thelia\Controller\Admin\BaseAdminController;
 
 use Thelia\Core\Security\Resource\AdminResources;
 use Thelia\Core\Security\AccessManager;
+use Thelia\Log\Tlog;
 use Thelia\Model\AreaQuery;
 use Thelia\Tools\TokenProvider;
 use Thelia\Tools\URL;
@@ -113,6 +114,7 @@ class FreeShippingController extends BaseAdminController
                 ->save();
 
         } catch (\Exception $e) {
+            Tlog::getInstance()->error('MondialRelayPickupPoint: failed to save area free shipping: '.$e->getMessage());
         }
 
         return $this->generateRedirect(URL::getInstance()->absoluteUrl('/admin/module/MondialRelayPickupPoint'));
