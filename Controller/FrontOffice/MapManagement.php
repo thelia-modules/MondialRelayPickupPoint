@@ -27,10 +27,10 @@ class MapManagement extends BaseFrontController
     public function getRelayMapAction(EventDispatcherInterface $eventDispatcher, Request $request)
     {
         $event = new FindRelayEvent(
-            intval($request->get('country_id', 0)),
-            $request->get('city', ''),
-            $request->get('zipcode', ''),
-            floatval($request->get('radius', 10))
+            intval($request->attributes->get('country_id', $request->query->get('country_id', $request->request->get('country_id', 0)))),
+            $request->attributes->get('city', $request->query->get('city', $request->request->get('city', ''))),
+            $request->attributes->get('zipcode', $request->query->get('zipcode', $request->request->get('zipcode', ''))),
+            floatval($request->attributes->get('radius', $request->query->get('radius', $request->request->get('radius', 10))))
         );
 
         $eventDispatcher->dispatch($event, MondialRelayEvents::FIND_RELAYS);

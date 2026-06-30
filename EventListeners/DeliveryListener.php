@@ -116,8 +116,8 @@ class DeliveryListener extends BaseAction implements EventSubscriberInterface
         if ($event->getDeliveryModule() == MondialRelayPickupPoint::getModuleId()) {
 
             // Get the selected pickup relay
-            if (null !== $relayId = $request->get('MondialRelayPickupPoint_relay', null)) {
-                $countryId = $request->get('mondial_relay_country_id', 0);
+            if (null !== $relayId = $request->attributes->get('MondialRelayPickupPoint_relay', $request->query->get('MondialRelayPickupPoint_relay', $request->request->get('MondialRelayPickupPoint_relay', null)))) {
+                $countryId = $request->attributes->get('mondial_relay_country_id', $request->query->get('mondial_relay_country_id', $request->request->get('mondial_relay_country_id', 0)));
 
                 // Load pickup data for the selected point
                 $relayDataEvent = new FindRelayEvent($countryId, '', '', 0);
